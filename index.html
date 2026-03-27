@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+    <script src="js/common.js" defer></script>
+    <script src="js/index.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <title>Библиотека - главная</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-container"> 
+            <nav class="main-nav">
+                <a href="index.html" class="logo-link">
+                    <img src="img/logo.png" alt="Главная" class="logo">
+                </a>
+                <a href="catalogue.html">Каталог</a>
+                <a href="map.html">Карта</a>
+                <a href="about.html">События</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+
+        <div class="search-half">
+            <form>
+               <div class="search-wrapper">
+                    <input class="main-search" type="text" placeholder="Найти книгу...">
+                    <div class="search-dropdown" id="search-dropdown" style="display: none;"></div>
+                    <button type="submit" class="search-button"></button>
+                </div>
+            </form>
+        </div>
+
+        <div class="carousel-wrapper">
+            <ul>
+                <li data-accName="Item 1">
+                    <img src="img/carousel_1.png">
+                </li>
+                <li data-accName="Item 2">
+                    <img src="img/carousel_2.png">
+                </li>
+                <li data-accName="Item 3">
+                    <img src="img/carousel_3.png">
+                </li>
+            </ul>
+        </div>
+
+        <p class="main-one-line">
+            ознакомиться с картой разделов можно на соответствующей 
+            <a href="map.html" class="link-to-map">странице</a>.
+        </p>
+    </div>
+
+    <div class="main-popular-section">
+        <div class="main-popular-section-content">
+            <p class="popular-title">популярное</p>
+            <div class="books-container" id="books-container" data-max-books="3"></div>
+            <div class="catalogue-wrapper">
+                    <a href="catalogue.html" class="link-to-cat">открыть каталог</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <footer>2026. Все права защищены</footer>
+    </div>
+
+
+    <template id="book-template">
+        <div class="book-card" data-book-id="" data-in-stock="true">
+            <div class="book-cover">
+                <img src="" alt="">
+                <div class="book-rating">
+                    <span class="rating-value"></span>
+                    <span class="star-icon">★</span> 
+                </div>
+            </div>
+            <div class="book-info">
+                <p class="book-title"></p>
+                <p class="book-author"></p>
+            </div>
+            <button class="book-button"></button>
+        </div>
+    </template>
+</body>
+</html>

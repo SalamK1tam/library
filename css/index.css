@@ -1,0 +1,320 @@
+
+/* Carousel (main page) */
+
+.carousel-wrapper {
+    position: relative;
+    height: 450px;
+}
+
+ul {
+    display: flex;
+    margin-top: 30px;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    anchor-name: --my-carousel;
+    scroll-marker-group: after;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    gap: 1vw;
+}
+
+li {
+    list-style-type: none;
+    scroll-snap-align: center;
+    flex: 0 0 100%;
+}
+
+li img {
+    object-fit: cover;
+    width: 100%;
+}
+
+ul::scroll-button(*) {
+    border: 0;
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.5);
+    color: #15110f;
+    cursor: default;
+    position: absolute;
+    position-anchor: --my-carousel;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    content: "";
+    opacity: 0;
+}
+
+ul::scroll-button(right):hover,
+ul::scroll-button(left):hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+ul::scroll-button(left) {
+    background-image: url("/img/arrow-left.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px;
+    left: 10px;
+    opacity: 1;
+    z-index: 10;
+    cursor: pointer;
+}
+
+ul::scroll-button(right) {
+    background-image: url("/img/arrow-right.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px;
+    right: 10px;
+    opacity: 1;
+    z-index: 10;
+    cursor: pointer;
+}
+
+ul::scroll-button(left):disabled,
+ul::scroll-button(right):disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+ul::scroll-button(left):disabled:hover,
+ul::scroll-button(right):disabled:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+ul::scroll-marker-group {
+  position: absolute;
+  position-anchor: --my-carousel;
+  bottom: 20px;
+  justify-self: anchor-center;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+li::scroll-marker {
+  content: attr(data-accName);
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border-radius: 50%;
+  overflow: hidden;
+  text-indent: 20px;
+  background-color: #fff;
+  opacity: .2;
+}
+
+li::scroll-marker:hover {
+    opacity: .4;
+}
+
+li::scroll-marker:target-current {
+  opacity: 1;
+}
+
+/* Link to map */
+
+.main-one-line {
+    font-family: 'Lato', sans-serif;
+    font-size: clamp(16px, 2.5vw, 24px);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase; 
+    color: #15110f;
+    margin-top: 65px;
+}
+
+.link-to-map {
+    color: inherit;
+    text-underline-offset: 5px;
+    text-decoration:underline;
+}
+
+.link-to-map:hover {
+    color: #56463e;
+}
+
+/* Popular books section */
+
+.main-popular-section {
+    max-width: 90%;
+    height: calc(300px + 45vw);
+    background-color: #fff;
+    margin: 0 auto;
+    margin-top: 60px;
+}
+
+.main-popular-section-content {
+    max-width: 80vw;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.popular-title {
+    font-family: 'Lato', sans-serif;
+    font-size: clamp(40px, 4vw, 64px);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase; 
+    color: #15110f;
+    padding: 3vw 0;
+}
+
+.books-container {
+    display: flex;
+    justify-content:space-between;
+    gap: clamp(20px, 4vw, 150px);
+}
+
+/* Covers */
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 clamp(150px, 20vw, 300px);
+    width: clamp(150px, 20vw, 300px);
+    min-height: 450px;
+}
+
+.book-cover {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 150%;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.book-cover img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* Rating */
+
+.book-rating {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 75px;
+    height: 30px;
+    background-color: #fff;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    gap: 2px;
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+.rating-value {
+    color: #56463e;
+    font-size: 24px;
+    font-weight: 800;
+    display: inline-block;
+    font-family: 'Lato', sans-serif;
+    letter-spacing: 0.08em;
+}
+
+.star-icon {
+    color: #56463e;
+    font-size: 28px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Author */
+
+.book-info {
+    height: 120px;
+    letter-spacing: 0.05em;
+    margin: 5px;
+}
+
+.book-title {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    line-height: 30px;
+    font-size: clamp(16px, 2.2vw, 24px);
+    margin: 0;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+}
+
+.book-author {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    opacity: .8;
+    line-height: 30px;
+    font-size: clamp(14px, 2vw, 18px);;
+}
+
+/* Book buttons */
+
+.book-button {
+    width: 100%;
+    height: calc(width/6);
+    margin-top: auto;
+    padding: 10px;
+    border: none;
+    font-size: clamp(12px, 1.6vw, 20px);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+}
+
+.book-button.in-stock {
+    background-color: #56463e;
+    color: #fff;
+}
+
+.book-button.in-stock:hover {
+    background-color: #bdb4a3;
+}
+
+.book-button.favorite {
+    background-color: #fff;
+    color: #56463e;
+    border: 2px solid #56463e;
+}
+
+.book-button.favorite:hover {
+    border: 2px solid #bdb4a3;
+    color: #bdb4a3;
+}
+
+.catalogue-wrapper {
+    justify-content: center;
+    margin-top: 5vw;
+    display: flex;
+}
+
+.link-to-cat {
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+    color: #000;
+    font-weight: 700;
+    letter-spacing: .1em;
+    font-size: clamp(15px, 2vw,24px);
+}
+
+.link-to-cat:hover {
+    color: #56463e;
+}
