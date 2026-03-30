@@ -29,7 +29,7 @@ function createBookCard(book, template) {
     title.textContent = book.title;
     const isAvailable = book.inStock > 0;
     button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
-    button.classList.add(isAvailable ? 'in-stock' : 'favorite');
+    button.classList.add(isAvailable ? 'in-stock' : 'out-of-stock');
     return clone;
 }
 // Получение всех уникальных жанров из книг

@@ -86,8 +86,18 @@ function renderBooks() {
     }
     
     booksToShow.forEach(book => {
-        const card = createBookCard(book, catalogueTemplate);
-        catalogueContainer.appendChild(card);
+        const fragment = createBookCard(book, catalogueTemplate);
+        // Получаем корневой элемент из фрагмента
+        const card = fragment.firstElementChild as HTMLElement;
+        
+        if (card) {
+            card.addEventListener('click', (e) => {
+                // Клик на кнопку не должен вызывать переход
+                if ((e.target as HTMLElement).closest('.book-button')) return;
+                window.location.href = `book.html?id=${book.id}`;
+            });
+            catalogueContainer.appendChild(card);
+        }
     });
     
     if (loadMoreWrapper) {

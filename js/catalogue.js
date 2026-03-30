@@ -72,8 +72,18 @@ function renderBooks() {
         return;
     }
     booksToShow.forEach(book => {
-        const card = createBookCard(book, catalogueTemplate);
-        catalogueContainer.appendChild(card);
+        const fragment = createBookCard(book, catalogueTemplate);
+        // Получаем корневой элемент из фрагмента
+        const card = fragment.firstElementChild;
+        if (card) {
+            card.addEventListener('click', (e) => {
+                // Клик на кнопку не должен вызывать переход
+                if (e.target.closest('.book-button'))
+                    return;
+                window.location.href = `book.html?id=${book.id}`;
+            });
+            catalogueContainer.appendChild(card);
+        }
     });
     if (loadMoreWrapper) {
         if (currentDisplayCount >= filteredBooks.length) {

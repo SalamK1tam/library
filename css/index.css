@@ -289,13 +289,13 @@ li::scroll-marker:target-current {
     background-color: #bdb4a3;
 }
 
-.book-button.favorite {
+.book-button.out-of-stock {
     background-color: #fff;
     color: #56463e;
     border: 2px solid #56463e;
 }
 
-.book-button.favorite:hover {
+.book-button.out-of-stock:hover {
     border: 2px solid #bdb4a3;
     color: #bdb4a3;
 }

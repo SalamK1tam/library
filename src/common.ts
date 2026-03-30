@@ -47,7 +47,7 @@ function createBookCard(book: BookData, template: HTMLTemplateElement): Document
     
     const isAvailable = book.inStock > 0;
     button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
-    button.classList.add(isAvailable ? 'in-stock' : 'favorite');
+    button.classList.add(isAvailable ? 'in-stock' : 'out-of-stock');
     
     return clone;
 }

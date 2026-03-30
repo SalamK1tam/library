@@ -6,7 +6,7 @@
     <link href="css/common.css" rel="stylesheet">
     <link href="css/book.css" rel="stylesheet">
     <script src="js/common.js" defer></script>
-    <script src="js/" defer></script> <!-- TODO -->
+    <script src="js/book.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
@@ -37,9 +37,14 @@
                 </div>
             </form>
         </div>
+    </div>
 
+    <div class="book-container-content">
+        <div id="book-container"></div>
+    </div>
 
-    
+    <div class="nav-container">
+        <footer>2026. Все права защищены</footer>
     </div>
 
     <template id="book-template">
@@ -50,12 +55,11 @@
             <div class="book-page-info">
                 <h1 class="book-page-title"></h1>
                 <p class="book-page-author"></p>
-                <div class="book-page-genres">
-                </div>
                 <div class="book-page-rating">
                     <div class="stars-container"></div>
                     <span class="rating-value"></span>
                 </div>
+                <div class="book-page-genres"></div>
                 <div class="book-page-stock-status"></div>
                 <button class="book-page-button"></button>
                 <div class="book-page-note">! Бронирование книги активно в течение трех дней. 
