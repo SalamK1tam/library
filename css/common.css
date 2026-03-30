@@ -101,7 +101,7 @@ input.main-search {
     width: 35px;
     height: 35px;
     border: none;
-    background: transparent url("/img/search.svg") no-repeat center;
+    background: transparent url("/library/img/search.svg") no-repeat center;
     background-size: 20px 20px;
     cursor: pointer;
     margin-top: 4px;
