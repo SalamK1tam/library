@@ -103,13 +103,8 @@ input.main-search {
     border: none;
     background: transparent url("/library/img/search.svg") no-repeat center;
     background-size: 20px 20px;
-    cursor: pointer;
     margin-top: 4px;
     border-radius: 50%;
-}
-
-.search-button:hover {
-    background-color: rgba(0, 0, 0, 0.05);
 }
 
 input.main-search::-webkit-search-cancel-button {
@@ -121,7 +116,7 @@ input.main-search::-webkit-search-cancel-button {
     position: relative;
 }
 
-/* Кастомный скроллбар для дропдауна */
+/* Scrollbar */
 .search-dropdown {
     position: absolute;
     top: calc(100% + 5px);

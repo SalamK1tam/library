@@ -190,6 +190,8 @@ li::scroll-marker:target-current {
     padding-bottom: 150%;
     overflow: hidden;
     margin-bottom: 15px;
+    overflow: visible;
+    cursor: pointer;
 }
 
 .book-cover img {
@@ -201,6 +203,24 @@ li::scroll-marker:target-current {
     object-fit: cover;
 }
 
+/* Overlay */
+
+.book-cover::after {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    width: calc(100% + 9px);
+    height: calc(100% + 9px);
+    border: 3px solid transparent;
+    transition: 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.book-cover:hover::after {
+    border-color: #56463e;
+}
 
 /* Rating */
 
@@ -235,7 +255,7 @@ li::scroll-marker:target-current {
     display: inline-block;
 }
 
-/* Author */
+/* Info */
 
 .book-info {
     height: 120px;
@@ -254,6 +274,11 @@ li::scroll-marker:target-current {
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-weight: 500;
+    cursor: pointer;
+}
+
+.book-title:hover {
+    text-decoration: underline;
 }
 
 .book-author {
@@ -286,7 +311,7 @@ li::scroll-marker:target-current {
 }
 
 .book-button.in-stock:hover {
-    background-color: #bdb4a3;
+    background-color: #C1B6A9;
 }
 
 .book-button.out-of-stock {
@@ -296,8 +321,8 @@ li::scroll-marker:target-current {
 }
 
 .book-button.out-of-stock:hover {
-    border: 2px solid #bdb4a3;
-    color: #bdb4a3;
+    border: 2px solid #C1B6A9;
+    color: #C1B6A9;
 }
 
 .catalogue-wrapper {

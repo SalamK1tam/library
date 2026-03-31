@@ -65,7 +65,7 @@
 
 .stars-container .star {
     font-size: 36px;
-    color: #bdb4a3;
+    color: #C1B6A9;
 }
 
 .stars-container .star.filled,
@@ -132,7 +132,7 @@
 }
 
 .book-page-button.in-stock:hover {
-    background-color: #bdb4a3;
+    background-color: #C1B6A9;
 }
 
 .book-page-button.out-of-stock {
@@ -142,8 +142,8 @@
 }
 
 .book-page-button.out-of-stock:hover {
-    border: 2px solid #bdb4a3;
-    color: #bdb4a3;
+    border: 2px solid #C1B6A9;
+    color: #C1B6A9;
 }
 
 /* Lil note at the end */

@@ -74,7 +74,6 @@ function renderBooks() {
         const noBooksMessage = document.createElement('div');
         noBooksMessage.className = 'no-books-message';
         noBooksMessage.innerHTML = `
-            <p>Книги не найдены.</p>
             <p>Попробуйте изменить условия поиска</p>
         `;
         catalogueContainer.appendChild(noBooksMessage);

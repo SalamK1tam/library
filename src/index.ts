@@ -1,4 +1,4 @@
-// Контейнер и шаблон (специфичны для главной страницы)
+// Контейнер и шаблон (для главной страницы)
 const container = document.getElementById('books-container') as HTMLDivElement | null;
 const template = document.getElementById('book-template') as HTMLTemplateElement | null;
 
@@ -27,8 +27,17 @@ if (!container || !template) {
         container.innerHTML = '';
         
         booksToShow.forEach(book => {
-            const card = createBookCard(book, template);
-            container.appendChild(card);
+            const fragment = createBookCard(book, template);
+
+            const card = fragment.firstElementChild as HTMLElement;
+            if (card) {
+                card.addEventListener('click', (e) => {
+                    // Клик на кнопку не должен вызывать переход
+                    if ((e.target as HTMLElement).closest('.book-button')) return;
+                    window.location.href = `book.html?id=${book.id}`;
+                });
+                container.appendChild(card);
+            }
         });
     });
 }
