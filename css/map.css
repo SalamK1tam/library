@@ -15,6 +15,7 @@
 .location-section {
     width: 100%;
     max-width: 1200px;
+    height: 400px;
     margin: 0 auto 80px;
     background: white;
     padding: 30px;
@@ -82,13 +83,140 @@
     color: #56463E;
     margin-bottom: 40px;
     text-align: justify;
+    line-height: 36px;
 }
 
-/* Стили для номеров на полках */
-.library-svg text {
+/* Секция с книгами на полке - поверх секции с расположением */
+.shelf-books-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    background: white;
+    padding: 30px;
+}
+
+.shelf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+}
+
+.shelf-title {
     font-family: 'Lato', sans-serif;
-    font-size: 14px;
+    font-size: 28px;
     font-weight: 700;
-    fill: #3498db;
-    transition: fill 0.3s ease;
+    margin: 0;
+    text-transform: uppercase;
+    color: #000;
+}
+
+.close-shelf-btn {
+    background: none;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    color: #7f7f7f;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-shelf-btn:hover {
+    color: #000;
+}
+
+.books-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.book-list-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: 0.2s;
+}
+
+.book-list-number {
+    font-family: 'PT Sans', 'Lato', sans-serif;
+    font-weight: 100;
+    font-size: 20px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 5%;
+    flex-shrink: 0;
+}
+
+.book-list-title {
+    font-family: 'PT Sans', 'Lato', sans-serif;
+    font-weight: 100;
+    font-size: 20px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 5%;
+}
+
+.book-list-author {
+    font-family: 'PT Sans', 'Lato', sans-serif;
+    font-weight: 100;
+    font-size: 20px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 5%;
+}
+
+.book-list-title::before {
+    content: "";
+}
+
+.book-list-title::after {
+    content: ". ";
+}
+
+.book-list-author::before {
+    content: " ";
+}
+
+.no-books-message {
+    font-family: 'PT Sans', 'Lato', sans-serif;
+    font-weight: 100;
+    font-size: 20px;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 5%;
+    text-align: center;
+    padding: 60px 40px;
+    grid-column: 1 / -1;
+}
+
+/* Интерактивность location-section */
+.location-item {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.location-item:hover {
+    color: #56463E;
+}
+
+/* Интерактивность списка книг */
+.book-list-item {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.book-list-item:hover .book-list-title,
+.location-item:hover {
+    color: #56463E;
+    text-decoration: underline;
 }

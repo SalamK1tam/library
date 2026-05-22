@@ -5,68 +5,171 @@ class LibraryMap {
     private shelfBooksSection: HTMLElement | null = null;
     private shelfTitle: HTMLElement | null = null;
     private booksContainer: HTMLElement | null = null;
+    private locationSection: HTMLElement | null = null;
     private closeBtn: HTMLElement | null = null;
-    private template: HTMLTemplateElement | null = null;
 
     private shelves = [
-        { id: 'shelf-1', genre: 'Художественная литература' },
-        { id: 'shelf-2', genre: 'Художественная литература' },
-        { id: 'shelf-3', genre: 'Художественная литература' },
-        { id: 'shelf-4', genre: 'Научная литература' },
-        { id: 'shelf-5', genre: 'Научная литература' },
-        { id: 'shelf-6', genre: 'Научная литература' },
-        { id: 'shelf-7', genre: 'Детская литература' },
-        { id: 'shelf-8', genre: 'Детская литература' },
-        { id: 'shelf-9', genre: 'Детская литература' },
-        { id: 'shelf-10', genre: 'Историческая литература' },
-        { id: 'shelf-11', genre: 'Историческая литература' },
-        { id: 'shelf-12', genre: 'Историческая литература' },
-        { id: 'shelf-13', genre: 'Фантастика' },
-        { id: 'shelf-14', genre: 'Фантастика' },
-        { id: 'shelf-15', genre: 'Фантастика' },
-        { id: 'shelf-16', genre: 'Классика' },
-        { id: 'shelf-17', genre: 'Классика' },
-        { id: 'shelf-18', genre: 'Классика' },
-        { id: 'shelf-19', genre: 'Поэзия' },
-        { id: 'shelf-20', genre: 'Поэзия' },
-        { id: 'shelf-21', genre: 'Поэзия' },
-        { id: 'shelf-22', genre: 'Драматургия' },
-        { id: 'shelf-23', genre: 'Драматургия' },
-        { id: 'shelf-24', genre: 'Драматургия' },
-        { id: 'shelf-25', genre: 'Философия' },
-        { id: 'shelf-26', genre: 'Философия' },
-        { id: 'shelf-27', genre: 'Философия' },
-        { id: 'shelf-28', genre: 'Современная проза' },
-        { id: 'shelf-29', genre: 'Современная проза' },
-        { id: 'shelf-30', genre: 'Современная проза' }
+        { id: 'shelf-1', genre: 'Английская классика' },
+        { id: 'shelf-2', genre: 'Английская классика' },
+        { id: 'shelf-3', genre: 'Немецкая классика' },
+        { id: 'shelf-4', genre: 'Французская классика' },
+        { id: 'shelf-5', genre: 'Классика других стран' },
+        { id: 'shelf-6', genre: 'Классика других стран' },
+        { id: 'shelf-7', genre: 'Русская классика (проза)' },
+        { id: 'shelf-8', genre: 'Русская классика (проза)' },
+        { id: 'shelf-9', genre: 'Русская классика (поэзия)' },
+        { id: 'shelf-10', genre: 'Русская классика (поэзия)' },
+        { id: 'shelf-11', genre: 'На иностранных языках' },
+        { id: 'shelf-12', genre: 'Биографии' },
+        { id: 'shelf-13', genre: 'Нон-фикшн' },
+        { id: 'shelf-14', genre: 'Наука' },
+        { id: 'shelf-15', genre: 'Манга/комиксы' },
+        { id: 'shelf-16', genre: 'Young adult литература' },
+        { id: 'shelf-17', genre: 'Young adult литература' },
+        { id: 'shelf-18', genre: 'Young adult литература' },
+        { id: 'shelf-19', genre: 'Young adult литература' },
+        { id: 'shelf-20', genre: 'Young adult литература' },
+        { id: 'shelf-21', genre: 'Детские (0-3)' },
+        { id: 'shelf-22', genre: 'Детские (3-10)' },
+        { id: 'shelf-23', genre: 'Детские (10-16)' },
+        { id: 'shelf-24', genre: 'Детские (10-16)' },
+        { id: 'shelf-25', genre: 'Популярные' },
+        { id: 'shelf-26', genre: 'Новинки' },
+        { id: 'shelf-27', genre: 'Архив' },
+        { id: 'shelf-28', genre: 'Архив' },
+        { id: 'shelf-29', genre: 'Архив' },
+        { id: 'shelf-30', genre: 'Архив' }
     ];
+
+    private shelfBooksMap: Map<string, BookData[]> = new Map();
+    private activeShelfId: string | null = null;
+    private shelfCircles: Map<string, SVGCircleElement> = new Map();
+    private shelfTexts: Map<string, SVGTextElement> = new Map();
+
+    private isInitialized: boolean = false;
 
     constructor() {
         this.shelfBooksSection = document.getElementById('shelf-books-section');
         this.shelfTitle = document.getElementById('shelf-title');
         this.booksContainer = document.getElementById('shelf-books-container');
+        this.locationSection = document.querySelector('.location-section');
         this.closeBtn = document.getElementById('close-shelf-btn');
-        this.template = document.getElementById('book-template') as HTMLTemplateElement;
 
         this.init();
+        
+        // Восстановление при возврате на страницу
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted || !this.isInitialized) {
+                this.reinit();
+            }
+        });
+    }
+
+    private async reinit(): Promise<void> {
+        // Очищаем старые данные
+        this.shelfBooksMap.clear();
+        this.shelfCircles.clear();
+        this.shelfTexts.clear();
+        this.activeShelfId = null;
+        this.svgDocument = null;
+        this.allBooks = [];
+        this.isInitialized = false;
+        
+        // Прячем секцию с книгами, показываем расположение
+        if (this.shelfBooksSection) {
+            this.shelfBooksSection.style.display = 'none';
+        }
+        if (this.locationSection) {
+            this.locationSection.style.display = 'block';
+        }
+        
+        // Заново инициализируем
+        await this.init();
     }
 
     private async init(): Promise<void> {
+        if (this.isInitialized) return;
+        
         await this.loadBooksData();
+        this.distributeBooksToShelves();
         await this.loadSVG();
         
         setTimeout(() => {
             this.addShelfNumbers();
             this.makeShelvesClickable();
-        }, 500);
+            this.isInitialized = true;
+        }, 100);
         
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => {
-                if (this.shelfBooksSection) {
-                    this.shelfBooksSection.style.display = 'none';
-                }
+                this.hideShelfBooks();
             });
         }
+    }
+
+    private distributeBooksToShelves(): void {
+        const shelvesByGenre: Map<string, string[]> = new Map();
+        this.shelves.forEach(shelf => {
+            if (!shelvesByGenre.has(shelf.genre)) {
+                shelvesByGenre.set(shelf.genre, []);
+            }
+            const ids = shelvesByGenre.get(shelf.genre);
+            if (ids) {
+                ids.push(shelf.id);
+            }
+        });
+
+        const specialGenres = new Set(['Архив', 'Популярные', 'Новинки']);
+        const distributedBooks = new Set<number>();
+
+        for (const [genre, shelfIds] of shelvesByGenre.entries()) {
+            if (specialGenres.has(genre)) continue;
+            
+            const genreBooks = this.allBooks
+                .filter(book => book.genres.includes(genre) && book.inStock > 0)
+                .sort((a, b) => a.author.localeCompare(b.author));
+            
+            genreBooks.forEach(book => distributedBooks.add(book.id));
+            
+            const booksPerShelf = Math.ceil(genreBooks.length / shelfIds.length);
+            
+            shelfIds.forEach((shelfId, index) => {
+                const start = index * booksPerShelf;
+                const end = start + booksPerShelf;
+                const shelfBooks = genreBooks.slice(start, end);
+                this.shelfBooksMap.set(shelfId, shelfBooks);
+            });
+        }
+
+        const popularBooks = this.allBooks
+            .filter(book => book.inStock >= 5)
+            .sort((a, b) => a.author.localeCompare(b.author));
+        
+        const popularShelves = shelvesByGenre.get('Популярные') || [];
+        popularShelves.forEach(shelfId => {
+            this.shelfBooksMap.set(shelfId, [...popularBooks]);
+        });
+        popularBooks.forEach(book => distributedBooks.add(book.id));
+
+        const newBooks = [...this.allBooks]
+            .filter(book => book.inStock > 0)
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 5);
+        
+        const newShelves = shelvesByGenre.get('Новинки') || [];
+        newShelves.forEach(shelfId => {
+            this.shelfBooksMap.set(shelfId, [...newBooks]);
+        });
+        newBooks.forEach(book => distributedBooks.add(book.id));
+
+        const archiveBooks = this.allBooks.filter(book => 
+            !distributedBooks.has(book.id) && book.inStock > 0
+        );
+        
+        const archiveShelves = shelvesByGenre.get('Архив') || [];
+        archiveShelves.forEach(shelfId => {
+            this.shelfBooksMap.set(shelfId, [...archiveBooks]);
+        });
     }
 
     private async loadBooksData(): Promise<void> {
@@ -75,12 +178,6 @@ class LibraryMap {
         } catch (error) {
             this.allBooks = [];
         }
-    }
-
-    private getBooksByGenre(genre: string): BookData[] {
-        return this.allBooks.filter(book => 
-            book.genres.some(g => g.toLowerCase().includes(genre.toLowerCase()))
-        );
     }
 
     private async loadSVG(): Promise<void> {
@@ -125,36 +222,40 @@ class LibraryMap {
                 const circle = this.svgDocument.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('cx', (bbox.x + bbox.width / 2).toString());
                 circle.setAttribute('cy', (bbox.y + bbox.height / 2).toString());
-                circle.setAttribute('r', '12');
+                circle.setAttribute('r', '9');
                 circle.setAttribute('fill', '#000000');
                 circle.setAttribute('pointer-events', 'none');
-                circle.style.transition = 'all 0.3s ease';
                 
                 const text = this.svgDocument.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', (bbox.x + bbox.width / 2).toString());
                 text.setAttribute('y', (bbox.y + bbox.height / 2).toString());
                 text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('dominant-baseline', 'middle');
-                text.setAttribute('font-size', '16');
-                text.setAttribute('dy', '0.1em');
+                text.setAttribute('dy', '0.35em');
+                text.setAttribute('font-size', '12');
                 text.setAttribute('font-family', 'Arial');
-                text.setAttribute('font-weight', 'semi-bold');
+                text.setAttribute('font-weight', 'bold');
                 text.setAttribute('fill', '#ffffff');
                 text.setAttribute('pointer-events', 'none');
-                text.style.transition = 'all 0.3s ease';
                 text.textContent = i.toString();
                 
                 group.appendChild(circle);
                 group.appendChild(text);
                 
+                this.shelfCircles.set(shelfId, circle);
+                this.shelfTexts.set(shelfId, text);
+                
                 shelfElement.addEventListener('mouseenter', () => {
-                    circle.setAttribute('fill', '#F5B342');
-                    text.setAttribute('fill', '#56463E');
+                    if (this.activeShelfId !== shelfId) {
+                        circle.setAttribute('fill', '#F5B342');
+                        text.setAttribute('fill', '#56463E');
+                    }
                 });
                 
                 shelfElement.addEventListener('mouseleave', () => {
-                    circle.setAttribute('fill', '#000000');
-                    text.setAttribute('fill', '#ffffff');
+                    if (this.activeShelfId !== shelfId) {
+                        circle.setAttribute('fill', '#000000');
+                        text.setAttribute('fill', '#ffffff');
+                    }
                 });
                 
                 shelfElement.appendChild(group);
@@ -174,62 +275,117 @@ class LibraryMap {
                 element.addEventListener('click', (e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    this.showShelfBooks(shelf.genre);
+                    this.showShelfBooks(shelf.id, shelf.genre);
                 });
             }
         });
+
+        this.makeLocationClickable();
     }
 
-    private showShelfBooks(genre: string): void {
-        if (!this.shelfTitle || !this.shelfBooksSection || !this.booksContainer || !this.template) return;
-
-        const books = this.getBooksByGenre(genre);
+    private makeLocationClickable(): void {
+        const locationItems = document.querySelectorAll('.location-item');
         
-        this.shelfTitle.textContent = `Книги на полке (${books.length})`;
-        this.shelfBooksSection.style.display = 'block';
+        locationItems.forEach(item => {
+            (item as HTMLElement).style.cursor = 'pointer';
+            item.addEventListener('click', () => {
+                const genreSpan = item.querySelector('.location-genre');
+                const genreText = genreSpan?.textContent || '';
+                const match = genreText.match(/^(\d+(?:-\d+)?)\./);
+                if (match && match[1]) {
+                    let shelfNumber: string;
+                    if (match[1].includes('-')) {
+                        const parts = match[1].split('-');
+                        shelfNumber = parts[0] || '';
+                    } else {
+                        shelfNumber = match[1];
+                    }
+                    if (shelfNumber) {
+                        const shelfId = `shelf-${shelfNumber}`;
+                        const shelf = this.shelves.find(s => s.id === shelfId);
+                        if (shelf) {
+                            this.showShelfBooks(shelf.id, shelf.genre);
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    private showShelfBooks(shelfId: string, genre: string): void {
+        if (!this.shelfTitle || !this.shelfBooksSection || !this.booksContainer) return;
+
+        if (this.activeShelfId) {
+            const prevCircle = this.shelfCircles.get(this.activeShelfId);
+            const prevText = this.shelfTexts.get(this.activeShelfId);
+            if (prevCircle) prevCircle.setAttribute('fill', '#000000');
+            if (prevText) prevText.setAttribute('fill', '#ffffff');
+        }
+
+        this.activeShelfId = shelfId;
+        const activeCircle = this.shelfCircles.get(shelfId);
+        const activeText = this.shelfTexts.get(shelfId);
+        if (activeCircle) activeCircle.setAttribute('fill', '#F5B342');
+        if (activeText) activeText.setAttribute('fill', '#56463E');
+
+        const books = this.shelfBooksMap.get(shelfId) || [];
+        const shelfNumber = shelfId.replace('shelf-', '');
+        
+        if (genre === 'Архив') {
+            this.shelfTitle.textContent = `КНИГИ В РАЗДЕЛЕ АРХИВ (ПОЛКИ 27-30)`;
+        } else {
+            this.shelfTitle.textContent = `КНИГИ В РАЗДЕЛЕ ${genre.toUpperCase()} (ПОЛКА ${shelfNumber})`;
+        }
         
         this.booksContainer.innerHTML = '';
         
         if (books.length === 0) {
-            this.booksContainer.innerHTML = '<div class="no-books">📚 На этой полке пока нет книг</div>';
-            return;
-        }
-        
-        const sortedBooks = [...books].sort((a, b) => {
-            const ratingA = parseFloat(a.rating);
-            const ratingB = parseFloat(b.rating);
-            return ratingB - ratingA;
-        });
-        
-        sortedBooks.forEach(book => {
-            const fragment = createBookCard(book, this.template!);
-            const card = fragment.firstElementChild as HTMLElement;
-            
-            if (card) {
-                card.addEventListener('click', (e) => {
-                    if ((e.target as HTMLElement).closest('.book-button')) return;
+            this.booksContainer.innerHTML = '<div class="no-books-message">На этой полке пока нет книг</div>';
+        } else {
+            books.forEach((book, index) => {
+                const bookItem = document.createElement('div');
+                bookItem.className = 'book-list-item';
+                bookItem.innerHTML = `
+                    <span class="book-list-number">${index + 1}.</span>
+                    <span class="book-list-title">${this.escapeHtml(book.title)}. ${this.escapeHtml(book.author)}</span>
+                `;
+                bookItem.addEventListener('click', () => {
                     window.location.href = `book.html?id=${book.id}`;
                 });
-                
-                const button = card.querySelector('.book-button') as HTMLButtonElement;
-                if (button) {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (book.inStock > 0) {
-                            alert(`Книга "${book.title}" забронирована!`);
-                        } else {
-                            alert(`Книга "${book.title}" добавлена в избранное!`);
-                        }
-                    });
-                }
-                
-                this.booksContainer?.appendChild(card);
-            }
-        });
+                this.booksContainer?.appendChild(bookItem);
+            });
+        }
         
-        setTimeout(() => {
-            this.shelfBooksSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        if (this.locationSection) {
+            this.locationSection.style.display = 'none';
+        }
+        this.shelfBooksSection.style.display = 'block';
+    }
+
+    private hideShelfBooks(): void {
+        if (this.shelfBooksSection) {
+            this.shelfBooksSection.style.display = 'none';
+        }
+        if (this.locationSection) {
+            this.locationSection.style.display = 'block';
+        }
+        
+        if (this.activeShelfId) {
+            const prevCircle = this.shelfCircles.get(this.activeShelfId);
+            const prevText = this.shelfTexts.get(this.activeShelfId);
+            if (prevCircle) prevCircle.setAttribute('fill', '#000000');
+            if (prevText) prevText.setAttribute('fill', '#ffffff');
+            this.activeShelfId = null;
+        }
+    }
+
+    private escapeHtml(str: string): string {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
 }
 
