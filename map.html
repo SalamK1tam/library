@@ -6,10 +6,11 @@
     <link href="css/common.css" rel="stylesheet">
     <link href="css/map.css" rel="stylesheet">
     <script src="js/common.js" defer></script>
-    <script src="js/" defer></script> <!-- TODO -->
+    <script src="js/map.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
     <title>Библиотека - карта</title>
 </head>
 <body>
@@ -38,7 +39,94 @@
             </form>
         </div>
 
+        <div class="map-container">
+            <object id="library-map" type="image/svg+xml" data="img/plan1.svg" class="library-svg"></object>
+        </div>
+
+        <div class="location-section">
+            <h2 class="location-title">Расположение книг по разделам</h2>
+            <div class="location-grid">
+                <div class="location-column">
+                    <div class="location-item">
+                        <span class="location-genre">1-2. Английская классика</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">3. Немецкая классика</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">4. Французская классика</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">5-6. Классика других стран</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">7-8. Русская классика (проза)</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">9-10. Русская классика (поэзия)</span>
+                    </div>
+                </div>
+                <div class="location-column">
+                    <div class="location-item">
+                        <span class="location-genre">11. На иностранных языках</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">12. Биографии</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">13. Нон-фикшн</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">14. Наука</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">15. Манга/комиксы</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">16-20. Young adult литература</span>
+                    </div>
+                </div>
+                <div class="location-column">
+                    <div class="location-item">
+                        <span class="location-genre">21. Детские (0-3)</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">22. Детские (3-10)</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">23-24. Детские (10-16)</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">25. Популярные</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">26. Новинки</span>
+                    </div>
+                    <div class="location-item">
+                        <span class="location-genre">27-30. Архив</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2 class="info-title">Как это работает</h2>
+            <p class="info-text">Интерактивная карта библиотеки поможет вам быстро найти нужный раздел и книги.
+                Нажмите на любую полку на карте — откроется список книг, которые на ней находятся. 
+                Кликните по книге, чтобы перейти на страницу с подробным описанием. 
+                Используйте поиск вверху страницы, чтобы найти книгу по названию или автору</li>
+            </p>
+            
+            <h2 class="info-title">Как это работает</h2>
+            <p class="info-text">Интерактивная карта библиотеки поможет вам быстро найти нужный раздел и книги.
+                Нажмите на любую полку на карте — откроется список книг, которые на ней находятся. 
+                Кликните по книге, чтобы перейти на страницу с подробным описанием. 
+                Используйте поиск вверху страницы, чтобы найти книгу по названию или автору</li>
+            </p>
+        </div>
     
+        <footer>2026. Все права защищены</footer>
+            
     </div>
 </body>
 </html>
