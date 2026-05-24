@@ -57,7 +57,7 @@ function applyFilters(): BookData[] {
     }
     
     if (isInStockOnly) {
-        result = result.filter(book => book.inStock > 0);
+        result = result.filter(book => book.in_stock > 0);
     }
     
     return result;
@@ -86,12 +86,10 @@ function renderBooks() {
     
     booksToShow.forEach(book => {
         const fragment = createBookCard(book, catalogueTemplate);
-        // Получаем корневой элемент из фрагмента
         const card = fragment.firstElementChild as HTMLElement;
         
         if (card) {
             card.addEventListener('click', (e) => {
-                // Клик на кнопку не должен вызывать переход
                 if ((e.target as HTMLElement).closest('.book-button')) return;
                 window.location.href = `book.html?id=${book.id}`;
             });

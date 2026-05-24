@@ -7,12 +7,34 @@ if (!bookContainer || !bookTemplate) {
 } else if (!bookId) {
     bookContainer.innerHTML = '<p>Книга не найдена</p>';
 } else {
-    loadBooks().then(books => {
+    loadBooks().then(async (books) => {
         const book = books.find(b => b.id === parseInt(bookId));
         
         if (!book) {
             bookContainer.innerHTML = '<p>Книга не найдена</p>';
             return;
+        }
+        
+        const user = getCurrentUser();
+        
+        // Проверяем, забронирована ли книга уже пользователем
+        let isReserved = false;
+        let isFavorited = false;
+        
+        if (user) {
+            try {
+                const [reservedRes, favoritedRes] = await Promise.all([
+                    fetch(`${API_URL}/users/${user.id}/reservations/${book.id}`),
+                    fetch(`${API_URL}/users/${user.id}/favorites/${book.id}`)
+                ]);
+                
+                const reservedData = await reservedRes.json();
+                const favoritedData = await favoritedRes.json();
+                isReserved = reservedData.isReserved;
+                isFavorited = favoritedData.isFavorited;
+            } catch (error) {
+                console.error('Ошибка проверки статуса книги:', error);
+            }
         }
         
         const clone = document.importNode(bookTemplate.content, true);
@@ -39,7 +61,6 @@ if (!bookContainer || !bookTemplate) {
         // Рейтинг звёздами
         const rating = parseFloat(book.rating);
         const rounded = Math.round(rating * 2) / 2;
-
         const fullStars = Math.floor(rounded);
         const hasHalfStar = rounded % 1 !== 0;
 
@@ -56,57 +77,85 @@ if (!bookContainer || !bookTemplate) {
         starsContainer.innerHTML = starsHtml;
         ratingValueSpan.textContent = `${book.rating}`;
         
-        // Наличие 
-        const isAvailable = book.inStock > 0;
+        // Наличие и состояние кнопки
+        const isAvailable = book.in_stock > 0;
+        
         if (isAvailable) {
-            stockStatus.textContent = `В наличии: ${book.inStock} шт.`;
+            stockStatus.textContent = `В наличии: ${book.in_stock} шт.`;
             stockStatus.className = 'book-page-stock-status in-stock';
             button.className = 'book-page-button in-stock';
+            
+            if (isReserved) {
+                button.textContent = 'Забронировано';
+                button.disabled = true;
+            } else {
+                button.textContent = 'Забронировать';
+            }
         } else {
             stockStatus.textContent = 'Нет в наличии';
             stockStatus.className = 'book-page-stock-status out-of-stock';
             button.className = 'book-page-button out-of-stock';
+            
+            if (isFavorited) {
+                button.textContent = 'В избранном';
+                button.disabled = true;
+            } else {
+                button.textContent = 'В избранное';
+            }
         }
         
-        button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
-        
-        // Добавляем обработчик кнопки
+        // Добавляем обработчик кнопки через API
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
             
-            const user = getCurrentUser();
-            if (!user) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
                 alert('Чтобы забронировать книгу или добавить её в избранное, нужно войти в аккаунт');
                 window.location.href = 'login.html';
                 return;
             }
             
-            if (isAvailable) {
-                // Бронирование
-                const key = `reservations_${user.phone}`;
-                const reservations: number[] = JSON.parse(localStorage.getItem(key) || '[]');
-                reservations.push(book.id);
-                localStorage.setItem(key, JSON.stringify(reservations));
-                
-                book.inStock--;
-                await updateBookStock(book.id, book.inStock);
-                
-                alert(`Книга "${book.title}" забронирована!`);
-                button.textContent = 'Забронировано';
-                button.disabled = true;
-                stockStatus.textContent = `В наличии: ${book.inStock} шт.`;
-            } else {
-                // Избранное
-                const key = `favorites_${user.phone}`;
-                const favorites: number[] = JSON.parse(localStorage.getItem(key) || '[]');
-                if (!favorites.includes(book.id)) {
-                    favorites.push(book.id);
-                    localStorage.setItem(key, JSON.stringify(favorites));
-                    alert(`Книга "${book.title}" добавлена в избранное`);
-                    button.textContent = 'В избранном';
-                    button.disabled = true;
-                } else {
-                    alert('Книга уже в избранном');
+            if (isAvailable && !isReserved) {
+                // Бронирование через API
+                try {
+                    const response = await fetch(`${API_URL}/reservations`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: currentUser.id, bookId: book.id })
+                    });
+                    
+                    if (response.ok) {
+                        button.textContent = 'Забронировано';
+                        button.disabled = true;
+                        alert(`Книга "${book.title}" забронирована!`);
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Ошибка бронирования');
+                    }
+                } catch (error) {
+                    console.error('Ошибка бронирования:', error);
+                    alert('Ошибка при бронировании');
+                }
+            } else if (!isAvailable && !isFavorited) {
+                // Избранное через API
+                try {
+                    const response = await fetch(`${API_URL}/favorites`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: currentUser.id, bookId: book.id })
+                    });
+                    
+                    if (response.ok) {
+                        button.textContent = 'В избранном';
+                        button.disabled = true;
+                        alert(`Книга "${book.title}" добавлена в избранное`);
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Ошибка добавления в избранное');
+                    }
+                } catch (error) {
+                    console.error('Ошибка добавления в избранное:', error);
+                    alert('Ошибка при добавлении в избранное');
                 }
             }
         });

@@ -126,7 +126,7 @@ class LibraryMap {
             if (specialGenres.has(genre)) continue;
             
             const genreBooks = this.allBooks
-                .filter(book => book.genres.includes(genre) && book.inStock > 0)
+                .filter(book => book.genres.includes(genre) && book.in_stock > 0)
                 .sort((a, b) => a.author.localeCompare(b.author));
             
             genreBooks.forEach(book => distributedBooks.add(book.id));
@@ -142,7 +142,7 @@ class LibraryMap {
         }
 
         const popularBooks = this.allBooks
-            .filter(book => book.inStock >= 5)
+            .filter(book => book.in_stock >= 5)
             .sort((a, b) => a.author.localeCompare(b.author));
         
         const popularShelves = shelvesByGenre.get('Популярные') || [];
@@ -152,7 +152,7 @@ class LibraryMap {
         popularBooks.forEach(book => distributedBooks.add(book.id));
 
         const newBooks = [...this.allBooks]
-            .filter(book => book.inStock > 0)
+            .filter(book => book.in_stock > 0)
             .sort((a, b) => b.id - a.id)
             .slice(0, 5);
         
@@ -163,7 +163,7 @@ class LibraryMap {
         newBooks.forEach(book => distributedBooks.add(book.id));
 
         const archiveBooks = this.allBooks.filter(book => 
-            !distributedBooks.has(book.id) && book.inStock > 0
+            !distributedBooks.has(book.id) && book.in_stock > 0
         );
         
         const archiveShelves = shelvesByGenre.get('Архив') || [];

@@ -90,6 +90,7 @@
 .shelf-books-section {
     width: 100%;
     max-width: 1200px;
+    min-height: 400px;
     margin: 0 auto 80px;
     background: white;
     padding: 30px;
@@ -195,7 +196,7 @@
     text-transform: uppercase;
     letter-spacing: 5%;
     text-align: center;
-    padding: 60px 40px;
+    padding: 100px 40px;
     grid-column: 1 / -1;
 }
 

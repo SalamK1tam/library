@@ -1,4 +1,5 @@
 interface UserData {
+    id: number;
     name: string;
     phone: string;
     role: string;
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Вход читателя
-    readerLoginBtn?.addEventListener('click', () => {
+    readerLoginBtn?.addEventListener('click', async () => {
         const name = (document.getElementById('reader-name') as HTMLInputElement).value.trim();
         const phone = (document.getElementById('reader-phone') as HTMLInputElement).value.trim();
         
@@ -53,38 +54,62 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Сохраняем пользователя в глобальный список
-        const users: { phone: string; name: string }[] = JSON.parse(localStorage.getItem('library_users') || '[]');
-        if (!users.find(u => u.phone === phone)) {
-            users.push({ phone, name });
-            localStorage.setItem('library_users', JSON.stringify(users));
+        // Сохраняем читателя
+        try {
+            const response = await fetch(`${API_URL}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone, role: 'reader' })
+            });
+            
+            const user = await response.json();
+            
+            localStorage.setItem('library_user', JSON.stringify({
+                id: user.id,
+                name: user.name,
+                phone: user.phone,
+                role: user.role
+            }));
+            
+            window.location.href = 'reader-cabinet.html';
+        } catch (error) {
+            console.error('Ошибка входа:', error);
+            alert('Ошибка при входе. Попробуйте позже.');
         }
-        
-        const userData: UserData = {
-            name: name,
-            phone: phone,
-            role: 'reader'
-        };
-        
-        localStorage.setItem('library_user', JSON.stringify(userData));
-        window.location.href = 'reader-cabinet.html';
     });
 
     // Вход библиотекаря
-    librarianLoginBtn?.addEventListener('click', () => {
+    librarianLoginBtn?.addEventListener('click', async () => {
         const login = (document.getElementById('librarian-login') as HTMLInputElement).value;
         const password = (document.getElementById('librarian-password') as HTMLInputElement).value;
         
-        if (login === 'admin' && password === 'admin') {
+        try {
+            const response = await fetch(`${API_URL}/librarian/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login, password })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.error || 'Ошибка входа');
+                return;
+            }
+            
+            const librarian = await response.json();
+            
             const userData: UserData = {
-                name: 'Библиотекарь',
+                id: librarian.id,
+                name: librarian.name,
                 phone: '',
                 role: 'librarian'
             };
+            
             localStorage.setItem('library_user', JSON.stringify(userData));
             window.location.href = 'librarian-cabinet.html';
-        } else {
-            alert('Неверный логин или пароль');
+        } catch (error) {
+            console.error('Ошибка входа:', error);
+            alert('Ошибка при входе');
         }
     });
 });

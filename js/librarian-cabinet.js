@@ -1,63 +1,111 @@
 "use strict";
 document.body.classList.add('librarian');
-// Получение всех уникальных пользователей из localStorage
-function getAllUsers() {
-    return JSON.parse(localStorage.getItem('library_users') || '[]');
+// Получение всех пользователей из БД
+async function getAllUsers() {
+    try {
+        const response = await fetch(`${API_URL}/users`);
+        return await response.json();
+    }
+    catch (error) {
+        console.error('Ошибка загрузки пользователей:', error);
+        return [];
+    }
 }
-// Получение данных пользователя по телефону
-function getUserBooks(phone) {
-    const reservations = JSON.parse(localStorage.getItem(`reservations_${phone}`) || '[]');
-    const favorites = JSON.parse(localStorage.getItem(`favorites_${phone}`) || '[]');
-    const activeLoans = JSON.parse(localStorage.getItem(`loans_${phone}`) || '[]');
-    return { reservations, favorites, activeLoans };
+// Выдать книгу
+async function issueBook(userId, bookId) {
+    try {
+        const response = await fetch(`${API_URL}/loans`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        return response.ok;
+    }
+    catch (error) {
+        console.error('Ошибка выдачи книги:', error);
+        return false;
+    }
 }
-// Сохранение данных пользователя
-function saveUserBooks(phone, type, data) {
-    localStorage.setItem(`${type}_${phone}`, JSON.stringify(data));
+// Вернуть книгу
+async function returnBook(userId, bookId) {
+    try {
+        const response = await fetch(`${API_URL}/loans`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        return response.ok;
+    }
+    catch (error) {
+        console.error('Ошибка возврата книги:', error);
+        return false;
+    }
+}
+// Добавить экземпляр (из избранного в бронирования)
+async function addStockFromFavorite(userId, bookId) {
+    try {
+        // Сначала удаляем из избранного
+        await fetch(`${API_URL}/favorites`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        // Добавляем в бронирования и увеличиваем in_stock
+        const response = await fetch(`${API_URL}/reservations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        return response.ok;
+    }
+    catch (error) {
+        console.error('Ошибка добавления экземпляра:', error);
+        return false;
+    }
 }
 async function renderUserList() {
     const container = document.getElementById('user-list');
     if (!container)
         return;
-    const users = getAllUsers();
+    const users = await getAllUsers();
     if (users.length === 0) {
         container.innerHTML = '<div class="no-items">Нет зарегистрированных пользователей</div>';
         return;
     }
-    container.innerHTML = users.map(user => `
-        <div class="user-item" data-phone="${user.phone}">
+    container.innerHTML = users.map((user) => `
+        <div class="user-item" data-user-id="${user.id}">
             <div class="user-item-info">
                 <div class="user-name">${user.name}</div>
                 <div class="user-phone">${user.phone}</div>
             </div>
-            <button class="user-select-btn" data-phone="${user.phone}">Выбрать</button>
+            <button class="user-select-btn" data-user-id="${user.id}">Выбрать</button>
         </div>
     `).join('');
-    // Обработчики только на кнопки
     document.querySelectorAll('.user-select-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
-            const phone = btn.getAttribute('data-phone');
+            const userId = parseInt(btn.getAttribute('data-user-id') || '0');
             document.querySelectorAll('.user-item').forEach(i => i.classList.remove('active'));
             document.querySelectorAll('.user-select-btn').forEach(b => b.classList.remove('active'));
-            // Добавляем активный класс выбранной кнопке и её родителю
             const userItem = btn.closest('.user-item');
             if (userItem)
                 userItem.classList.add('active');
             btn.classList.add('active');
-            if (phone) {
-                await renderUserDetails(phone);
+            if (userId) {
+                await renderUserDetails(userId);
             }
         });
     });
 }
-async function renderUserDetails(phone) {
+async function renderUserDetails(userId) {
     const allBooks = await loadBooks();
-    const userBooks = getUserBooks(phone);
+    const reservations = await getUserReservations(userId);
+    const loans = await getUserLoans(userId);
+    const favorites = await getUserFavorites(userId);
     // Вкладка бронирования
     const reservationsContainer = document.getElementById('reservations-list');
     if (reservationsContainer) {
-        const reservationBooks = allBooks.filter(book => userBooks.reservations.includes(book.id));
+        const reservationBooks = allBooks.filter(book => reservations.includes(book.id));
         if (reservationBooks.length === 0) {
             reservationsContainer.innerHTML = '<div class="no-items">Нет забронированных книг</div>';
         }
@@ -67,7 +115,7 @@ async function renderUserDetails(phone) {
                     <div class="book-info">
                         <div class="book-title">${book.title}</div>
                         <div class="book-author">${book.author}</div>
-                        <div class="book-status">В наличии: ${book.inStock} шт.</div>
+                        <div class="book-status">В наличии: ${book.in_stock} шт.</div>
                     </div>
                     <button class="issue-btn" data-book-id="${book.id}">Выдать</button>
                 </div>
@@ -76,22 +124,14 @@ async function renderUserDetails(phone) {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const bookId = parseInt(btn.dataset.bookId || '0');
-                    // Перемещаем из бронирований в выданные
-                    let reservations = [...userBooks.reservations];
-                    let activeLoans = [...userBooks.activeLoans];
-                    reservations = reservations.filter(id => id !== bookId);
-                    activeLoans.push(bookId);
-                    saveUserBooks(phone, 'reservations', reservations);
-                    saveUserBooks(phone, 'loans', activeLoans);
-                    // Обновляем количество книг
-                    const allBooks = await loadBooks();
-                    const targetBook = allBooks.find(b => b.id === bookId);
-                    if (targetBook && targetBook.inStock > 0) {
-                        targetBook.inStock--;
-                        localStorage.setItem('books_cache', JSON.stringify(allBooks));
+                    const success = await issueBook(userId, bookId);
+                    if (success) {
+                        await renderUserDetails(userId);
+                        alert('Книга выдана');
                     }
-                    await renderUserDetails(phone);
-                    alert('Книга выдана');
+                    else {
+                        alert('Ошибка выдачи книги');
+                    }
                 });
             });
         }
@@ -99,7 +139,7 @@ async function renderUserDetails(phone) {
     // Вкладка возврата
     const loansContainer = document.getElementById('loans-list');
     if (loansContainer) {
-        const loanBooks = allBooks.filter(book => userBooks.activeLoans.includes(book.id));
+        const loanBooks = allBooks.filter(book => loans.includes(book.id));
         if (loanBooks.length === 0) {
             loansContainer.innerHTML = '<div class="no-items">Нет выданных книг</div>';
         }
@@ -117,19 +157,14 @@ async function renderUserDetails(phone) {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const bookId = parseInt(btn.dataset.bookId || '0');
-                    // Удаляем из выданных
-                    let activeLoans = [...userBooks.activeLoans];
-                    activeLoans = activeLoans.filter(id => id !== bookId);
-                    saveUserBooks(phone, 'loans', activeLoans);
-                    // Увеличиваем количество книг
-                    const allBooks = await loadBooks();
-                    const targetBook = allBooks.find(b => b.id === bookId);
-                    if (targetBook) {
-                        targetBook.inStock++;
-                        localStorage.setItem('books_cache', JSON.stringify(allBooks));
+                    const success = await returnBook(userId, bookId);
+                    if (success) {
+                        await renderUserDetails(userId);
+                        alert('Книга возвращена');
                     }
-                    await renderUserDetails(phone);
-                    alert('Книга возвращена');
+                    else {
+                        alert('Ошибка возврата книги');
+                    }
                 });
             });
         }
@@ -137,7 +172,7 @@ async function renderUserDetails(phone) {
     // Вкладка избранного
     const favoritesContainer = document.getElementById('favorites-list');
     if (favoritesContainer) {
-        const favoriteBooks = allBooks.filter(book => userBooks.favorites.includes(book.id));
+        const favoriteBooks = allBooks.filter(book => favorites.includes(book.id));
         if (favoriteBooks.length === 0) {
             favoritesContainer.innerHTML = '<div class="no-items">Нет избранных книг</div>';
         }
@@ -156,21 +191,13 @@ async function renderUserDetails(phone) {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const bookId = parseInt(btn.dataset.bookId || '0');
-                    // Увеличиваем количество книг до 1
-                    const allBooks = await loadBooks();
-                    const targetBook = allBooks.find(b => b.id === bookId);
-                    if (targetBook && targetBook.inStock === 0) {
-                        targetBook.inStock = 1;
-                        localStorage.setItem('books_cache', JSON.stringify(allBooks));
-                        // Перемещаем из избранного в бронирования
-                        let favorites = [...userBooks.favorites];
-                        let reservations = [...userBooks.reservations];
-                        favorites = favorites.filter(id => id !== bookId);
-                        reservations.push(bookId);
-                        saveUserBooks(phone, 'favorites', favorites);
-                        saveUserBooks(phone, 'reservations', reservations);
-                        await renderUserDetails(phone);
+                    const success = await addStockFromFavorite(userId, bookId);
+                    if (success) {
+                        await renderUserDetails(userId);
                         alert('Экземпляр добавлен, книга перемещена в бронирования');
+                    }
+                    else {
+                        alert('Ошибка добавления экземпляра');
                     }
                 });
             });
@@ -193,7 +220,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         adminNameSpan.textContent = user.name;
     }
     await renderUserList();
-    // Переключение вкладок
     const navBtns = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     navBtns.forEach(btn => {

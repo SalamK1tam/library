@@ -1,21 +1,33 @@
 document.body.classList.add('reader');
 
 interface UserData {
+    id: number;
     name: string;
     phone: string;
     role: string;
 }
 
+interface BookData {
+    id: number;
+    title: string;
+    author: string;
+    cover: string;
+    rating: string;
+    in_stock: number;
+    genres: string[];
+}
+
 declare function loadBooks(): Promise<BookData[]>;
+declare function getCurrentUser(): UserData | null;
 
 async function renderReservations() {
     const container = document.getElementById('reservations-list');
     if (!container) return;
     
     const user = getCurrentUser();
-    if (!user) return
+    if (!user) return;
     
-    const reservationIds: number[] = JSON.parse(localStorage.getItem(`reservations_${user.phone}`) || '[]');
+    const reservationIds = await getUserReservations(user.id);
     
     if (reservationIds.length === 0) {
         container.innerHTML = '<div class="no-items">У вас пока нет активных бронирований</div>';
@@ -50,19 +62,13 @@ async function renderReservations() {
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
             
-            let ids: number[] = JSON.parse(localStorage.getItem(`reservations_${user.phone}`) || '[]');
-            ids = ids.filter(id => id !== book.id);
-            localStorage.setItem(`reservations_${user.phone}`, JSON.stringify(ids));
-            
-            const allBooks = await loadBooks();
-            const targetBook = allBooks.find(b => b.id === book.id);
-            if (targetBook) {
-                targetBook.inStock++;
-                localStorage.setItem('books_cache', JSON.stringify(allBooks));
+            const success = await cancelReservation(user.id, book.id);
+            if (success) {
+                await renderReservations();
+                alert('Бронирование отменено');
+            } else {
+                alert('Ошибка отмены бронирования');
             }
-            
-            await renderReservations();
-            alert('Бронирование отменено');
         });
         
         card.addEventListener('click', (e) => {
@@ -81,7 +87,7 @@ async function renderFavorites() {
     const user = getCurrentUser();
     if (!user) return;
     
-    const favoriteIds: number[] = JSON.parse(localStorage.getItem(`favorites_${user.phone}`) || '[]');
+    const favoriteIds = await getUserFavorites(user.id);
     
     if (favoriteIds.length === 0) {
         container.innerHTML = '<div class="no-items">У вас пока нет избранных книг</div>';
@@ -116,12 +122,13 @@ async function renderFavorites() {
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
             
-            let ids: number[] = JSON.parse(localStorage.getItem(`favorites_${user.phone}`) || '[]');
-            ids = ids.filter(id => id !== book.id);
-            localStorage.setItem(`favorites_${user.phone}`, JSON.stringify(ids));
-            
-            await renderFavorites();
-            alert('Удалено из избранного');
+            const success = await removeFromFavorites(user.id, book.id);
+            if (success) {
+                await renderFavorites();
+                alert('Удалено из избранного');
+            } else {
+                alert('Ошибка удаления из избранного');
+            }
         });
         
         card.addEventListener('click', (e) => {
@@ -140,23 +147,57 @@ async function renderHistory() {
     const user = getCurrentUser();
     if (!user) return;
     
-    // Здесь потом будет реальная история выдач из БД
-    const history: any[] = []; // Пока пустой массив
-    
-    if (history.length === 0) {
-        container.innerHTML = '<div class="no-items">У вас пока нет выдач</div>';
-        return;
+    try {
+        // Получаем активные выдачи (Loans) и историю (History)
+        const [activeLoansRes, historyRes] = await Promise.all([
+            fetch(`${API_URL}/users/${user.id}/loans`),
+            fetch(`${API_URL}/users/${user.id}/history`)
+        ]);
+        
+        const activeLoanIds = await activeLoansRes.json();
+        const historyIds = await historyRes.json();
+        
+        if (activeLoanIds.length === 0 && historyIds.length === 0) {
+            container.innerHTML = '<div class="no-items">У вас пока нет истории выдач</div>';
+            return;
+        }
+        
+        const allBooks = await loadBooks();
+        
+        // Собираем все книги с их статусами
+        const activeBooks = activeLoanIds.map((id: number) => ({
+            ...allBooks.find(b => b.id === id),
+            status: 'Выдана'
+        }));
+        
+        const historyBooks = historyIds.map((id: number) => ({
+            ...allBooks.find(b => b.id === id),
+            status: 'Возвращена'
+        }));
+        
+        const allItems = [...activeBooks, ...historyBooks];
+        
+        container.innerHTML = allItems.map(book => `
+            <div class="book-item" data-book-id="${book.id}">
+                <div class="book-info">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-author">${book.author}</div>
+                </div>
+                <div class="history-status ${book.status === 'Выдана' ? 'active' : 'returned'}">${book.status}</div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.book-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const bookId = (item as HTMLElement).dataset.bookId;
+                window.location.href = `book.html?id=${bookId}`;
+            });
+        });
+        
+    } catch (error) {
+        console.error('Ошибка загрузки истории:', error);
+        container.innerHTML = '<div class="no-items">Ошибка загрузки истории</div>';
     }
-    
-    // container.innerHTML = history.map(item => `
-    //     <div class="book-list-item">
-    //         <span class="book-list-number">${item.id}.</span>
-    //         <span class="book-list-title">${escapeHtml(item.title)}</span>
-    //         <span class="book-list-author">${escapeHtml(item.author)}</span>
-    //         <span class="history-date">Выдана: ${item.loanDate}</span>
-    //         <span class="history-date">Возвращена: ${item.returnDate || 'не возвращена'}</span>
-    //     </div>
-    // `).join('');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {

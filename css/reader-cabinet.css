@@ -1,0 +1,193 @@
+/* Reader section */
+
+/* Main reader section layout */
+.reader .books-list:not(.history-list) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.history-list .book-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 2px solid #56463E;
+}
+
+.history-list .book-info {
+    height: auto !important;
+    letter-spacing: 0.05em;
+    margin: 5px;
+}
+
+/* History status */
+.history-status {
+    min-width: 100px;
+    font-size: 14px;
+    padding: 6px 8px;
+    margin-left: 10px;
+    border: 2px solid #56463e;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.history-status.active {
+    background-color: #56463e;
+    color: #fff;
+}
+
+.history-status.returned {
+    background-color: none;
+    color: #56463e;
+}
+
+/* Book cards */
+.reader .books-list .book-card {
+    display: flex;
+    flex-direction: column;
+    width: clamp(150px, 20vw, 220px);
+    min-height: 400px;
+}
+
+.reader .books-list .book-cover {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 150%;
+    overflow: hidden;
+    margin-bottom: 15px;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.reader .books-list .book-cover img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.reader .books-list .book-cover::after {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    width: calc(100% + 9px);
+    height: calc(100% + 9px);
+    border: 3px solid transparent;
+    transition: 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.reader .books-list .book-cover:hover::after {
+    border-color: #56463e;
+}
+
+.reader .books-list .book-rating {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 50px;
+    height: 20px;
+    background-color: #fff;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    gap: 2px;
+    box-sizing: border-box;
+    line-height: 1;
+}
+
+.reader .books-list .rating-value {
+    color: #56463e;
+    font-size: 16px;
+    font-weight: 800;
+    display: inline-block;
+    font-family: 'Lato', sans-serif;
+    letter-spacing: 0.08em;
+}
+
+.reader .books-list .star-icon {
+    color: #56463e;
+    font-size: 20px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.reader .books-list .book-info {
+    height: 120px;
+    letter-spacing: 0.05em;
+    margin: 5px;
+}
+
+.reader .books-list .book-title {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    line-height: 30px;
+    font-size: clamp(12px, 2.2vw, 18px);
+    margin: 0;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.reader .books-list .book-title:hover {
+    text-decoration: underline;
+}
+
+.reader .books-list .book-author {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    opacity: .8;
+    line-height: 30px;
+    font-size: clamp(10px, 2vw, 16px);
+}
+
+/* Book card buttons */
+.books-list .cabinet-book-button {
+    width: 100%;
+    margin-top: auto;
+    padding: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Lato', sans-serif;
+    text-transform: uppercase;
+}
+
+.books-list .cabinet-book-button.cancel-reservation-btn {
+    background-color: #56463e;
+    color: #fff;
+}
+
+.books-list .cabinet-book-button.cancel-reservation-btn:hover {
+    background-color: #C1B6A9;
+}
+
+.books-list .cabinet-book-button.remove-favorite-btn {
+    background-color: #fff;
+    color: #56463e;
+    border: 2px solid #56463e;
+}
+
+.books-list .cabinet-book-button.remove-favorite-btn:hover {
+    border: 2px solid #C1B6A9;
+    color: #C1B6A9;
+}

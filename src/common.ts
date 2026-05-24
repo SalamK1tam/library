@@ -5,7 +5,7 @@ interface BookData {
     author: string;
     cover: string;
     rating: string;
-    inStock: number;
+    in_stock: number;
     genres: string[];
 }
 
@@ -14,19 +14,21 @@ interface BooksResponse {
 }
 
 interface UserData {
+    id: number;
     name: string;
     phone: string;
     role: string;
 }
 
-// Загрузка книг 
-async function loadBooks() {
+const API_URL = 'http://localhost:3000/api';
+
+async function loadBooks(): Promise<BookData[]> {
     try {
-        const response = await fetch('books.json');
-        const data: BooksResponse = await response.json();
-        return data.books;
+        const response = await fetch(`${API_URL}/books`);
+        if (!response.ok) throw new Error('Ошибка загрузки');
+        return await response.json();
     } catch (error) {
-        console.error('Ошибка загрузки JSON:', error);
+        console.error('Ошибка загрузки книг:', error);
         return [];
     }
 }
@@ -44,12 +46,12 @@ async function updateBookStock(bookId: number, newStock: number): Promise<void> 
     const allBooks = await loadBooks();
     const book = allBooks.find(b => b.id === bookId);
     if (book) {
-        book.inStock = newStock;
+        book.in_stock = newStock;
         localStorage.setItem('books_cache', JSON.stringify(allBooks));
     }
 }
 
-// Создание карточки книги с обработчиком
+// Создание карточки книги с обработчиком 
 function createBookCard(book: BookData, template: HTMLTemplateElement): DocumentFragment {
     const clone = document.importNode(template.content, true);
     
@@ -61,7 +63,7 @@ function createBookCard(book: BookData, template: HTMLTemplateElement): Document
     const button = clone.querySelector('.book-button') as HTMLButtonElement;
     
     card.dataset.bookId = book.id.toString();
-    card.dataset.inStock = book.inStock.toString();
+    card.dataset.inStock = book.in_stock.toString();
     
     img.src = book.cover;
     img.alt = `Обложка ${book.title}`;
@@ -69,11 +71,11 @@ function createBookCard(book: BookData, template: HTMLTemplateElement): Document
     author.textContent = book.author;
     title.textContent = book.title;
     
-    const isAvailable = book.inStock > 0;
+    const isAvailable = book.in_stock > 0;
     button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
     button.classList.add(isAvailable ? 'in-stock' : 'out-of-stock');
     
-    // Обработчик кнопки
+    // Обработчик кнопки через API
     button.addEventListener('click', async (e) => {
         e.stopPropagation();
         
@@ -84,34 +86,51 @@ function createBookCard(book: BookData, template: HTMLTemplateElement): Document
             return;
         }
         
-        if (book.inStock > 0) {
-            // Бронирование
-            const key = `reservations_${user.phone}`;
-            const reservations: number[] = JSON.parse(localStorage.getItem(key) || '[]');
-            reservations.push(book.id);
-            localStorage.setItem(key, JSON.stringify(reservations));
-            
-            // Уменьшаем количество доступных книг
-            book.inStock--;
-            await updateBookStock(book.id, book.inStock);
-            
-            alert(`Книга "${book.title}" забронирована!`);
-            button.textContent = 'Забронировано';
-            button.disabled = true;
-            button.classList.add('disabled');
+        if (book.in_stock > 0) {
+            // Бронирование через API
+            try {
+                const response = await fetch(`${API_URL}/reservations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id, bookId: book.id })
+                });
+                
+                if (response.ok) {
+                    // Обновляем локальные данные
+                    book.in_stock--;
+                    button.textContent = 'Забронировано';
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                    alert(`Книга "${book.title}" забронирована!`);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Ошибка бронирования');
+                }
+            } catch (error) {
+                console.error('Ошибка бронирования:', error);
+                alert('Ошибка при бронировании');
+            }
         } else {
-            // Избранное
-            const key = `favorites_${user.phone}`;
-            const favorites: number[] = JSON.parse(localStorage.getItem(key) || '[]');
-            if (!favorites.includes(book.id)) {
-                favorites.push(book.id);
-                localStorage.setItem(key, JSON.stringify(favorites));
-                alert(`Книга "${book.title}" добавлена в избранное`);
-                button.textContent = 'В избранном';
-                button.disabled = true;
-                button.classList.add('disabled');
-            } else {
-                alert('Книга уже в избранном');
+            // Избранное через API
+            try {
+                const response = await fetch(`${API_URL}/favorites`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id, bookId: book.id })
+                });
+                
+                if (response.ok) {
+                    button.textContent = 'В избранном';
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                    alert(`Книга "${book.title}" добавлена в избранное`);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Ошибка добавления в избранное');
+                }
+            } catch (error) {
+                console.error('Ошибка добавления в избранное:', error);
+                alert('Ошибка при добавлении в избранное');
             }
         }
     });
@@ -266,6 +285,69 @@ function updateAuthButton() {
             authLink.textContent = 'Вход';
             authLink.href = 'login.html';
         }
+    }
+}
+
+// Получение бронирований пользователя
+async function getUserReservations(userId: number): Promise<number[]> {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/reservations`);
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки бронирований:', error);
+        return [];
+    }
+}
+
+// Получение выданных книг пользователя
+async function getUserLoans(userId: number): Promise<number[]> {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/loans`);
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки выдач:', error);
+        return [];
+    }
+}
+
+// Получение избранного пользователя
+async function getUserFavorites(userId: number): Promise<number[]> {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/favorites`);
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки избранного:', error);
+        return [];
+    }
+}
+
+// Отменить бронирование
+async function cancelReservation(userId: number, bookId: number): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_URL}/reservations`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Ошибка отмены бронирования:', error);
+        return false;
+    }
+}
+
+// Удалить из избранного
+async function removeFromFavorites(userId: number, bookId: number): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_URL}/favorites`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, bookId })
+        });
+        return response.ok;
+    } catch (error) {
+        console.error('Ошибка удаления из избранного:', error);
+        return false;
     }
 }
 

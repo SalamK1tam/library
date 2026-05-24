@@ -1,0 +1,102 @@
+
+/* Librarian section */
+
+/* User list */
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #56463E;
+}
+
+.user-select-btn {
+    padding: 8px 16px;
+    border: 2px solid #56463e;
+    background-color: #fff;
+    color: #56463e;
+    font-family: 'Lato', sans-serif;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.user-select-btn:hover {
+    border-color: #C1B6A9;
+    color: #C1B6A9;
+}
+
+.user-select-btn.active {
+    background-color: #56463e;
+    color: #fff;
+}
+
+.user-select-btn.active:hover {
+    background-color: #56463e;
+    color: #fff;
+    cursor: default;
+}
+
+/* Book list */
+.librarian .books-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.librarian .book-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #56463E;
+}
+
+/* Book title/author */
+.librarian .books-list .book-title {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    font-size: clamp(12px, 2.2vw, 18px);
+    overflow: hidden;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.librarian .books-list .book-title:hover {
+    text-decoration: underline;
+}
+
+.librarian .books-list .book-author {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #000;
+    opacity: .8;
+    line-height: 30px;
+    font-size: clamp(10px, 2vw, 16px);
+}
+
+/* Books left */
+.book-status {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Book buttons */
+.issue-btn, .return-btn, .add-stock-btn {
+    padding: 8px 16px;
+    font-family: 'Lato', sans-serif;
+    border: 2px solid #56463e;
+    background-color: #fff;
+    font-weight: 700;
+    color: #56463e;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.issue-btn:hover, .return-btn:hover, .add-stock-btn:hover {
+    border-color: #C1B6A9;
+    color: #C1B6A9;
+}
