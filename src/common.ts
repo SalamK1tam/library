@@ -13,6 +13,12 @@ interface BooksResponse {
     books: BookData[];
 }
 
+interface UserData {
+    name: string;
+    phone: string;
+    role: string;
+}
+
 // Загрузка книг 
 async function loadBooks() {
     try {
@@ -25,7 +31,25 @@ async function loadBooks() {
     }
 }
 
-// Создание карточки книги 
+
+// Получение текущего пользователя
+function getCurrentUser(): UserData | null {
+    const savedUser = localStorage.getItem('library_user');
+    if (!savedUser) return null;
+    return JSON.parse(savedUser);
+}
+
+// Обновление количества книг в кэше
+async function updateBookStock(bookId: number, newStock: number): Promise<void> {
+    const allBooks = await loadBooks();
+    const book = allBooks.find(b => b.id === bookId);
+    if (book) {
+        book.inStock = newStock;
+        localStorage.setItem('books_cache', JSON.stringify(allBooks));
+    }
+}
+
+// Создание карточки книги с обработчиком
 function createBookCard(book: BookData, template: HTMLTemplateElement): DocumentFragment {
     const clone = document.importNode(template.content, true);
     
@@ -48,6 +72,49 @@ function createBookCard(book: BookData, template: HTMLTemplateElement): Document
     const isAvailable = book.inStock > 0;
     button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
     button.classList.add(isAvailable ? 'in-stock' : 'out-of-stock');
+    
+    // Обработчик кнопки
+    button.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        
+        const user = getCurrentUser();
+        if (!user) {
+            alert('Чтобы забронировать книгу, нужно войти в аккаунт');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (book.inStock > 0) {
+            // Бронирование
+            const key = `reservations_${user.phone}`;
+            const reservations: number[] = JSON.parse(localStorage.getItem(key) || '[]');
+            reservations.push(book.id);
+            localStorage.setItem(key, JSON.stringify(reservations));
+            
+            // Уменьшаем количество доступных книг
+            book.inStock--;
+            await updateBookStock(book.id, book.inStock);
+            
+            alert(`Книга "${book.title}" забронирована!`);
+            button.textContent = 'Забронировано';
+            button.disabled = true;
+            button.classList.add('disabled');
+        } else {
+            // Избранное
+            const key = `favorites_${user.phone}`;
+            const favorites: number[] = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!favorites.includes(book.id)) {
+                favorites.push(book.id);
+                localStorage.setItem(key, JSON.stringify(favorites));
+                alert(`Книга "${book.title}" добавлена в избранное`);
+                button.textContent = 'В избранном';
+                button.disabled = true;
+                button.classList.add('disabled');
+            } else {
+                alert('Книга уже в избранном');
+            }
+        }
+    });
     
     return clone;
 }
@@ -74,13 +141,10 @@ function searchBooks(books: BookData[], query: string): BookData[] {
         const titleLower = book.title.toLowerCase();
         const authorLower = book.author.toLowerCase();
         
-        // Проверяем, что ВСЕ слова из запроса встречаются в названии ИЛИ в имени автора
         return words.every(word => {
-            // Проверка по названию
             const titleMatch = titleLower.split(/\s+/).some(bookWord => 
                 bookWord.startsWith(word)
             );
-            // Проверка по автору
             const authorMatch = authorLower.split(/\s+/).some(authorWord => 
                 authorWord.startsWith(word)
             );
@@ -96,42 +160,41 @@ function initGlobalSearch() {
     const searchInput = document.querySelector('.main-search') as HTMLInputElement | null;
     const searchDropdown = document.getElementById('search-dropdown') as HTMLDivElement | null;
     
-    if (!searchInput || !searchDropdown) return;
-    
-    // Загружаем книги для поиска
-    loadBooks().then(books => {
-        allBooksForSearch = books;
-    });
-    
-    // При фокусе — показываем все книги
-    searchInput.addEventListener('focus', () => {
-        if (allBooksForSearch.length > 0) {
-            renderSearchDropdown(allBooksForSearch.slice(0, 10), searchDropdown);
-            searchDropdown.style.display = 'block';
-        }
-    });
-    
-    // Обработка ввода
-    searchInput.addEventListener('input', (e) => {
-        const query = (e.target as HTMLInputElement).value.trim();
+    if (searchInput && searchDropdown) {
+        loadBooks().then(books => {
+            allBooksForSearch = books;
+        });
         
-        if (query.length === 0) {
-            renderSearchDropdown(allBooksForSearch.slice(0, 10), searchDropdown);
-            searchDropdown.style.display = 'block';
-            return;
-        }
+        searchInput.addEventListener('focus', () => {
+            if (allBooksForSearch.length > 0) {
+                renderSearchDropdown(allBooksForSearch.slice(0, 10), searchDropdown);
+                searchDropdown.style.display = 'block';
+            }
+        });
         
-        const results = searchBooks(allBooksForSearch, query);
-        renderSearchDropdown(results.slice(0, 10), searchDropdown);
-        searchDropdown.style.display = results.length > 0 ? 'block' : 'block';
-    });
+        searchInput.addEventListener('input', (e) => {
+            const query = (e.target as HTMLInputElement).value.trim();
+            
+            if (query.length === 0) {
+                renderSearchDropdown(allBooksForSearch.slice(0, 10), searchDropdown);
+                searchDropdown.style.display = 'block';
+                return;
+            }
+            
+            const results = searchBooks(allBooksForSearch, query);
+            renderSearchDropdown(results.slice(0, 10), searchDropdown);
+            searchDropdown.style.display = results.length > 0 ? 'block' : 'block';
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target as Node) && !searchDropdown.contains(e.target as Node)) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+    }
     
-    // Закрытие при клике вне
-    document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target as Node) && !searchDropdown.contains(e.target as Node)) {
-            searchDropdown.style.display = 'none';
-        }
-    });
+    updateAuthButton();
+    document.body.style.display = 'block';
 }
 
 function renderSearchDropdown(books: BookData[], dropdown: HTMLDivElement) {
@@ -158,6 +221,52 @@ function renderSearchDropdown(books: BookData[], dropdown: HTMLDivElement) {
             (document.querySelector('.main-search') as HTMLInputElement).value = '';
         });
     });
+}
+
+function updateAuthButton() {
+    const authLinkElement = document.querySelector('.auth-link');
+    
+    const savedUser = localStorage.getItem('library_user');
+    
+    if (authLinkElement) {
+        // Если элемент уже существует, просто обновляем его
+        const link = authLinkElement as HTMLAnchorElement;
+        if (savedUser) {
+            link.textContent = 'Аккаунт';
+            link.href = 'reader-cabinet.html';
+        } else {
+            link.textContent = 'Вход';
+            link.href = 'login.html';
+        }
+    } else {
+        // Если элемента нет, создаем новый
+        const navContainer = document.querySelector('.main-nav');
+        if (!navContainer) return;
+        
+        const authLink = document.createElement('a');
+        authLink.className = 'auth-link';
+        
+        // Ищем ссылку "Вход" или "Аккаунт" чтобы заменить
+        const existingLoginLink = Array.from(navContainer.querySelectorAll('a')).find(
+            a => a.textContent === 'Вход' || a.textContent === 'Аккаунт'
+        );
+        
+        if (existingLoginLink) {
+            // Заменяем существующую ссылку
+            (existingLoginLink as HTMLAnchorElement).replaceWith(authLink);
+        } else {
+            // Если нет ссылки для замены, добавляем в конец
+            navContainer.appendChild(authLink);
+        }
+        
+        if (savedUser) {
+            authLink.textContent = 'Аккаунт';
+            authLink.href = 'reader-cabinet.html';
+        } else {
+            authLink.textContent = 'Вход';
+            authLink.href = 'login.html';
+        }
+    }
 }
 
 function escapeHtml(str: string): string {

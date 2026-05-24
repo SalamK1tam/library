@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/cabinet.css" rel="stylesheet">
+    <script src="js/common.js" defer></script>
+    <script src="js/librarian-cabinet.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <title>Панель управления - Библиотекарь</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-container"> 
+            <nav class="main-nav">
+                <a href="index.html" class="logo-link">
+                    <img src="img/logo.png" alt="Главная" class="logo">
+                </a>
+                <a href="catalogue.html">Каталог</a>
+                <a href="map.html">Карта</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+        <div class="cabinet-container">
+            <div class="cabinet-sidebar">
+                <div class="sidebar-user-info">
+                    <div class="user-name" id="admin-name">Библиотекарь</div>
+                </div>
+                <nav class="cabinet-nav">
+                    <button class="nav-btn active" data-tab="users">Пользователи</button>
+                    <button class="nav-btn" data-tab="reservations">Бронирования</button>
+                    <button class="nav-btn" data-tab="loans">Выдача книг</button>
+                    <button class="nav-btn" data-tab="favorites">Избранные</button>
+                </nav>
+                
+                <button id="logout-btn" class="logout-btn">Выйти</button>
+            </div>
+
+            <div class="cabinet-content">
+                <div class="tab-content active" id="users-tab">
+                    <h2 class="tab-title">Список пользователей</h2>
+                    <div class="user-list" id="user-list"></div>
+                </div>
+                <div class="tab-content" id="reservations-tab">
+                    <h2 class="tab-title">Бронирования</h2>
+                    <div class="books-list" id="reservations-list"></div>
+                </div>
+                <div class="tab-content" id="loans-tab">
+                    <h2 class="tab-title">Выдача книг</h2>
+                    <div class="books-list" id="loans-list"></div>
+                </div>
+                <div class="tab-content" id="favorites-tab">
+                    <h2 class="tab-title">Избранные</h2>
+                    <div class="books-list" id="favorites-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>2026. Все права защищены</footer>
+
+</body>
+</html>

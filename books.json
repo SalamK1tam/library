@@ -24,7 +24,7 @@
             "author": "Анджей Сапковский",
             "cover": "img/book3.jpg",
             "rating": "4.6",
-            "inStock": 0,
+            "inStock": 5,
             "genres": ["Young adult литература", "Фэнтези", "Приключения"]
         },
         {
@@ -78,7 +78,7 @@
             "author": "Мария Корелли",
             "cover": "img/book9.jpg",
             "rating": "4.7",
-            "inStock": 0,
+            "inStock": 5,
             "genres": ["Английская классика", "Классика", "Роман"]
         },
         {
@@ -115,7 +115,7 @@
             "cover": "img/book13.jpg",
             "rating": "4.8",
             "inStock": 1,
-            "genres": ["Наука", "Нон-фикшн"]
+            "genres": ["Нон-фикшн", "Наука"]
         },
         {
             "id": 14,

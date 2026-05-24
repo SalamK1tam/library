@@ -57,7 +57,8 @@ if (!bookContainer || !bookTemplate) {
         ratingValueSpan.textContent = `${book.rating}`;
         
         // Наличие 
-        if (book.inStock > 0) {
+        const isAvailable = book.inStock > 0;
+        if (isAvailable) {
             stockStatus.textContent = `В наличии: ${book.inStock} шт.`;
             stockStatus.className = 'book-page-stock-status in-stock';
             button.className = 'book-page-button in-stock';
@@ -67,8 +68,48 @@ if (!bookContainer || !bookTemplate) {
             button.className = 'book-page-button out-of-stock';
         }
         
-        // Кнопка
-        button.textContent = book.inStock > 0 ? 'Забронировать' : 'В избранное';
+        button.textContent = isAvailable ? 'Забронировать' : 'В избранное';
+        
+        // Добавляем обработчик кнопки
+        button.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            
+            const user = getCurrentUser();
+            if (!user) {
+                alert('Чтобы забронировать книгу или добавить её в избранное, нужно войти в аккаунт');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (isAvailable) {
+                // Бронирование
+                const key = `reservations_${user.phone}`;
+                const reservations: number[] = JSON.parse(localStorage.getItem(key) || '[]');
+                reservations.push(book.id);
+                localStorage.setItem(key, JSON.stringify(reservations));
+                
+                book.inStock--;
+                await updateBookStock(book.id, book.inStock);
+                
+                alert(`Книга "${book.title}" забронирована!`);
+                button.textContent = 'Забронировано';
+                button.disabled = true;
+                stockStatus.textContent = `В наличии: ${book.inStock} шт.`;
+            } else {
+                // Избранное
+                const key = `favorites_${user.phone}`;
+                const favorites: number[] = JSON.parse(localStorage.getItem(key) || '[]');
+                if (!favorites.includes(book.id)) {
+                    favorites.push(book.id);
+                    localStorage.setItem(key, JSON.stringify(favorites));
+                    alert(`Книга "${book.title}" добавлена в избранное`);
+                    button.textContent = 'В избранном';
+                    button.disabled = true;
+                } else {
+                    alert('Книга уже в избранном');
+                }
+            }
+        });
         
         bookContainer.appendChild(clone);
     });

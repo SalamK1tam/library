@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
+    <script src="js/common.js" defer></script>
+    <script src="js/login.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <title>Вход - Библиотека</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-container"> 
+            <nav class="main-nav">
+                <a href="index.html" class="logo-link">
+                    <img src="img/logo.png" alt="Главная" class="logo">
+                </a>
+                <a href="catalogue.html">Каталог</a>
+                <a href="map.html">Карта</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+        <div class="login-container">
+            <div class="login-tabs">
+                <button class="login-tab active" data-role="reader">Читатель</button>
+                <button class="login-tab" data-role="librarian">Библиотекарь</button>
+            </div>
+
+            <div class="login-form" id="reader-form">
+                <h2 class="login-title">Вход для читателя</h2>
+                <div class="input-group">
+                    <input type="text" id="reader-name" placeholder="Ваше имя" class="login-input">
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="reader-phone" placeholder="Номер телефона" class="login-input">
+                </div>
+                <button id="reader-login-btn" class="login-btn">Войти</button>
+                <p class="login-hint">После входа вы останетесь в системе до нажатия "Выйти"</p>
+            </div>
+
+            <div class="login-form" id="librarian-form" style="display: none;">
+                <h2 class="login-title">Вход для библиотекаря</h2>
+                <div class="input-group">
+                    <input type="text" id="librarian-login" placeholder="Логин" class="login-input">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="librarian-password" placeholder="Пароль" class="login-input">
+                </div>
+                <button id="librarian-login-btn" class="login-btn">Войти</button>
+                <p class="login-hint">После входа вы останетесь в системе до нажатия "Выйти"</p>
+            </div>
+        </div>
+
+        <footer>2026. Все права защищены</footer>
+        
+    </div>
+</body>
+</html>

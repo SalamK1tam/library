@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/common.css" rel="stylesheet">
+    <link href="css/cabinet.css" rel="stylesheet">
+    <script src="js/common.js" defer></script>
+    <script src="js/reader-cabinet.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
+    <title>Личный кабинет - Читатель</title>
+</head>
+<body>
+    <header class="site-header">
+        <div class="nav-container"> 
+            <nav class="main-nav">
+                <a href="index.html" class="logo-link">
+                    <img src="img/logo.png" alt="Главная" class="logo">
+                </a>
+                <a href="catalogue.html">Каталог</a>
+                <a href="map.html">Карта</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-content">
+        <div class="cabinet-container">
+            <div class="cabinet-sidebar">
+                <div class="sidebar-user-info">
+                    <div class="user-name" id="user-name">Иван Петров</div>
+                    <div class="user-phone" id="user-phone">+7 (999) 123-45-67</div>
+                </div>
+                <nav class="cabinet-nav">
+                    <button class="nav-btn active" data-tab="reservations">Бронирования</button>
+                    <button class="nav-btn" data-tab="favorites">Избранное</button>
+                    <button class="nav-btn" data-tab="history">История выдач</button>
+                </nav>
+                <button id="logout-btn" class="logout-btn">Выйти</button>
+            </div>
+
+            <div class="cabinet-content">
+                <div class="tab-content active" id="reservations-tab">
+                    <h2 class="tab-title">Активные бронирования</h2>
+                    <div class="books-list" id="reservations-list">
+                        <!-- книги будут здесь -->
+                    </div>
+                </div>
+                <div class="tab-content" id="favorites-tab">
+                    <h2 class="tab-title">Избранные книги</h2>
+                    <div class="books-list" id="favorites-list"></div>
+                </div>
+                <div class="tab-content" id="history-tab">
+                    <h2 class="tab-title">История выдач</h2>
+                    <div class="books-list" id="history-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>2026. Все права защищены</footer>
+
+    <template id="book-template-cabinet">
+        <div class="book-card" data-book-id="" data-in-stock="true">
+            <div class="book-cover">
+                <img src="" alt="">
+                <div class="book-rating">
+                    <span class="rating-value"></span>
+                    <span class="star-icon">★</span> 
+                </div>
+            </div>
+            <div class="book-info">
+                <p class="book-title"></p>
+                <p class="book-author"></p>
+            </div>
+            <button class="cabinet-book-button"></button>
+        </div>
+    </template>
+</body>
+</html>

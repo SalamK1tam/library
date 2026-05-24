@@ -286,7 +286,7 @@ li::scroll-marker:target-current {
     color: #000;
     opacity: .8;
     line-height: 30px;
-    font-size: clamp(14px, 2vw, 18px);;
+    font-size: clamp(14px, 2vw, 18px);
 }
 
 /* Book buttons */
