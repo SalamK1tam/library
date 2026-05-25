@@ -44,14 +44,7 @@ async function returnBook(userId, bookId) {
 // Добавить экземпляр (из избранного в бронирования)
 async function addStockFromFavorite(userId, bookId) {
     try {
-        // Сначала удаляем из избранного
-        await fetch(`${API_URL}/favorites`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, bookId })
-        });
-        // Добавляем в бронирования и увеличиваем in_stock
-        const response = await fetch(`${API_URL}/reservations`, {
+        const response = await fetch(`${API_URL}/favorites/add-stock`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, bookId })

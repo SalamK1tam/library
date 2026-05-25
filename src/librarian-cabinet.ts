@@ -63,20 +63,11 @@ async function returnBook(userId: number, bookId: number): Promise<boolean> {
 // Добавить экземпляр (из избранного в бронирования)
 async function addStockFromFavorite(userId: number, bookId: number): Promise<boolean> {
     try {
-        // Сначала удаляем из избранного
-        await fetch(`${API_URL}/favorites`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, bookId })
-        });
-        
-        // Добавляем в бронирования и увеличиваем in_stock
-        const response = await fetch(`${API_URL}/reservations`, {
+        const response = await fetch(`${API_URL}/favorites/add-stock`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, bookId })
         });
-        
         return response.ok;
     } catch (error) {
         console.error('Ошибка добавления экземпляра:', error);

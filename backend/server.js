@@ -247,6 +247,33 @@ app.delete('/api/favorites', async (req, res) => {
     }
 });
 
+// Добавление экземпляра (из избранного в бронирования)
+app.post('/api/favorites/add-stock', async (req, res) => {
+    const { userId, bookId } = req.body;
+    
+    try {
+        await pool.query(
+            'DELETE FROM Favorites WHERE user_id = $1 AND book_id = $2',
+            [userId, bookId]
+        );
+        
+        await pool.query(
+            'UPDATE Books SET in_stock = in_stock + 1 WHERE id = $1',
+            [bookId]
+        );
+        
+        await pool.query(
+            'INSERT INTO Reservations (user_id, book_id) VALUES ($1, $2)',
+            [userId, bookId]
+        );
+        
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Ошибка добавления экземпляра' });
+    }
+});
+
 // ВЫДАЧА
 
 // Получить выданные книги пользователя
