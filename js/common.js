@@ -215,14 +215,11 @@ function updateAuthButton() {
             return;
         const authLink = document.createElement('a');
         authLink.className = 'auth-link';
-        // Ищем ссылку "Вход" или "Аккаунт" чтобы заменить
         const existingLoginLink = Array.from(navContainer.querySelectorAll('a')).find(a => a.textContent === 'Вход' || a.textContent === 'Аккаунт');
         if (existingLoginLink) {
-            // Заменяем существующую ссылку
             existingLoginLink.replaceWith(authLink);
         }
         else {
-            // Если нет ссылки для замены, добавляем в конец
             navContainer.appendChild(authLink);
         }
         if (savedUser) {

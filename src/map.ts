@@ -66,7 +66,6 @@ class LibraryMap {
     }
 
     private async reinit(): Promise<void> {
-        // Очищаем старые данные
         this.shelfBooksMap.clear();
         this.shelfCircles.clear();
         this.shelfTexts.clear();
@@ -75,7 +74,6 @@ class LibraryMap {
         this.allBooks = [];
         this.isInitialized = false;
         
-        // Прячем секцию с книгами, показываем расположение
         if (this.shelfBooksSection) {
             this.shelfBooksSection.style.display = 'none';
         }
@@ -83,7 +81,6 @@ class LibraryMap {
             this.locationSection.style.display = 'block';
         }
         
-        // Заново инициализируем
         await this.init();
     }
 

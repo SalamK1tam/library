@@ -94,3 +94,29 @@
     text-align: center;
     margin-top: 20px;
 }
+
+@media (max-width: 868px) {
+    .login-container {
+        width: 90%;
+        margin: 40px auto 60px auto;
+        padding: 25px;
+    }
+    .login-tab {
+        font-size: clamp(14px, 3vw, 18px);
+    }
+    .login-title {
+        font-size: 18px;
+        text-align: center;
+    }
+    .login-input {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    .login-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+    .login-hint {
+        font-size: 10px;
+    }
+}

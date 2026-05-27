@@ -15,7 +15,7 @@
 .location-section {
     width: 100%;
     max-width: 1200px;
-    height: 400px;
+    height: auto;
     margin: 0 auto 80px;
     background: white;
     padding: 30px;
@@ -220,4 +220,77 @@
 .location-item:hover {
     color: #56463E;
     text-decoration: underline;
+}
+
+@media (max-width: 668px) {
+    .map-container {
+        margin: 30px auto 15px;
+        padding: 10px;
+    }
+    .location-section {
+        margin: 0 auto 40px;
+        padding: 20px;
+    }
+    .location-title {
+        font-size: 22px;
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .location-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .location-column {
+        gap: 12px;
+    }
+    .location-genre {
+        font-size: 14px;
+    }
+    .info-section {
+        padding: 20px;
+        margin: 0 auto 30px;
+    }
+    .info-title {
+        font-size: 22px;
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .info-text {
+        font-size: 14px;
+        line-height: 24px;
+        margin-bottom: 25px;
+    }
+    .shelf-books-section {
+        margin: 0 auto 40px;
+        padding: 20px;
+        min-height: 300px;
+    }
+    .shelf-header {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+    .shelf-title {
+        font-size: 18px;
+    }
+    .close-shelf-btn {
+        font-size: 24px;
+        width: 28px;
+        height: 28px;
+    }
+    .books-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        max-height: 350px;
+    }
+    .book-list-number,
+    .book-list-title,
+    .book-list-author {
+        font-size: 14px;
+    }
+    .no-books-message {
+        font-size: 14px;
+        padding: 50px 20px;
+    }
 }

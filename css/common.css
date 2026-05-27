@@ -213,3 +213,71 @@ footer {
     margin: 4vw 0 2vw 0;
     justify-self:center;
 }
+
+/* Adapting for mobiles */
+
+@media (max-width: 868px) {
+
+    .page-content {
+        min-height: auto;
+        max-width: 90%;
+    }
+
+    .site-header {
+        height: auto;
+        padding: 15px 0;
+    }
+    
+    .main-nav {
+        justify-content: space-between;
+    }
+    
+    .main-nav a:not(.logo-link),
+    .main-nav a.auth-link {
+        font-size: clamp(10px, 3vw, 16px);
+        white-space: nowrap;
+    }
+    
+    .logo {
+        height: clamp(35px, 2vw, 50px);
+        width: clamp(35px, 2vw, 50px);
+    }
+    
+    .search-half {
+        margin-top: 20px;
+    }
+    
+    .search-half form {
+        width: 100%;
+    }
+    
+    input.main-search {
+        font-size: 14px;
+        padding: 8px 40px 8px 12px;
+    }
+    
+    .search-button {
+        width: 30px;
+        height: 30px;
+        background-size: 16px;
+        margin-top: 3px;
+    }
+    
+    .search-result-title {
+        font-size: 14px;
+    }
+    
+    .search-result-author {
+        font-size: 12px;
+    }
+    
+    .search-result-cover {
+        width: 30px;
+        height: 45px;
+    }
+    
+    footer {
+        font-size: 14px;
+        margin: 30px 0 15px 0;
+    }
+}

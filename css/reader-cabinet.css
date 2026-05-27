@@ -191,3 +191,49 @@
     border: 2px solid #C1B6A9;
     color: #C1B6A9;
 }
+@media (max-width: 868px) {
+    .reader .books-list:not(.history-list) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    .reader .books-list .book-card {
+        width: 100%;
+        min-height: auto;
+        margin-bottom: 15px;
+    }
+    .reader .books-list .book-rating {
+        width: 40px;
+        height: 18px;
+    }
+    .reader .books-list .rating-value {
+        font-size: 12px;
+    }
+    .reader .books-list .star-icon {
+        font-size: 14px;
+    }
+    .reader .books-list .book-info {
+        height: auto;
+        min-height: 70px;
+    }
+    .reader .books-list .book-title {
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .reader .books-list .book-author {
+        font-size: 10px;
+        line-height: 16px;
+    }
+    .books-list .cabinet-book-button {
+        font-size: 8px;
+        padding: 8px;
+    }
+    .history-list .book-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px;
+    }
+    .history-list .history-status {
+        margin-inline: 0;
+        align-self: center;
+    }
+}

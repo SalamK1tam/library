@@ -351,3 +351,85 @@
     font-weight: 700;
     color: #56463e;
 }
+
+@media (max-width: 860px) {
+    .catalogue-controls {
+        flex-direction: column;
+        max-height: none;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    .catalogue-filters {
+        width: 100%;
+        gap: 15px;
+    }
+    .search-half {
+        width: 100%;
+    }
+    .dropdown-trigger {
+        font-size: 14px;
+        padding: 8px 12px 8px 12px;
+    }
+    .dropdown-arrow {
+        font-size: 20px;
+        height: 14px;
+    }
+    .filter-checkbox {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+    .filter-checkbox input {
+        width: 16px;
+        height: 16px;
+    }
+    .genre-option {
+        font-size: 12px;
+    }
+    .catalogue-section {
+        margin-top: 30px;
+    }
+    .catalogue-grid {
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+        row-gap: 30px;
+    }
+    .catalogue-grid .book-rating {
+        width: 50px;
+        height: 22px;
+    }
+    .catalogue-grid .rating-value {
+        font-size: 14px;
+    }
+    .catalogue-grid .star-icon {
+        font-size: 16px;
+    }
+    .catalogue-grid .book-info {
+        height: auto;
+        min-height: 70px;
+    }
+    .catalogue-grid .book-title {
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .catalogue-grid .book-author {
+        font-size: 10px;
+        line-height: 16px;
+    }
+    .catalogue-grid .book-button {
+        font-size: 10px;
+        padding: 6px;
+    }
+    .load-more-btn {
+        padding: 8px 40px;
+        font-size: 14px;
+    }
+    .no-books-message {
+        margin: 15vh 0;
+    }
+    .no-books-message p {
+        font-size: 16px;
+    }
+    .no-books-message p:first-child {
+        font-size: 20px;
+    }
+}

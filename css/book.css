@@ -36,7 +36,7 @@
 
 .book-page-title {
     font-family: 'Lato', sans-serif;
-    font-size: 32px;
+    font-size: clamp(24px, 2vw, 32px);
     font-weight: 600;
     color: #000;
     letter-spacing: 5%;
@@ -112,11 +112,11 @@
 /* Button */
 
 .book-page-button {
-    width: 50%;
+    width: 60%;
     margin-top: auto;
     padding: 12px;
     border: none;
-    font-size: 24px;
+    font-size: clamp(14px, 1.5vw, 24px);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -153,4 +153,70 @@
     font-size: 14px;
     color: #999;
     line-height: 1;
+}
+
+@media (max-width: 960px) {
+    .book-container-content {
+        margin: 20px auto;
+        padding: 20px 0;
+    }
+    .book-page {
+        flex-direction: column;
+        gap: 30px;
+        max-width: 90vw;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+    .book-page-cover {
+        flex: 0 0 auto;
+        width: 80%;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+    .book-page-title {
+        font-size: clamp(18px, 5vw, 24px);
+        word-break: break-word;
+        margin-bottom: 15px;
+    }
+    .book-page-author {
+        font-size: clamp(14px, 4vw, 18px);
+        margin-bottom: 20px;
+    }
+    .book-page-rating {
+        gap: 8px;
+        margin-bottom: 25px;
+    }
+    .stars-container .star {
+        font-size: clamp(20px, 6vw, 28px);
+    }
+    .rating-value {
+        font-size: clamp(14px, 4vw, 20px);
+    }
+    .book-page-genres {
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    .book-page-genre {
+        font-size: clamp(10px, 3vw, 14px);
+        padding: 4px 12px;
+    }
+    .book-page-stock-status {
+        font-size: clamp(10px, 3vw, 14px);
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    .book-page-button {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px;
+        margin: 0 auto 15px;
+        display: block;
+        white-space: normal;
+        word-break: break-word;
+    }
+    .book-page-note {
+        font-size: clamp(9px, 3vw, 11px);
+        text-align: center;
+        padding: 0 10px;
+    }
 }
